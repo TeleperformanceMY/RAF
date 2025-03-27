@@ -1,173 +1,137 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Refer A Friend</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <!-- Header with Logo -->
-  <header class="top-bar">
-    <div class="logo-container">
-      <img src="assets/TPLogo11.png" alt="Logo" class="logo">
-    </div>
-  </header>
+// Fetch JSON data and populate dropdowns
+let jsonData = [];
+const languageSelect = document.getElementById('language-select');
+const locationSelect = document.getElementById('location-select');
+const jobSelect = document.getElementById('job-type-select');
+const generatedLink = document.getElementById('generated-link');
+const qrImg = document.getElementById('qrImg');
 
-  <!-- Spacer Divs -->
-  <div class="spacer"></div>
-  <div class="spacer"></div>
-  <div class="spacer"></div>
-  <div class="spacer"></div>
-  <div class="spacer"></div>
-  <div class="spacer"></div>
+fetch('data.json') // Ensure this path matches your folder structure
+  .then(response => response.json())
+  .then(data => {
+    jsonData = data;
 
-  <!-- Main Content -->
-  <main class="popup-container">
-    <div class="popup-content" id="step1">
-      <!-- Additional Logo -->
-      <div class="additional-logo">
-        <img src="assets/TPLogo11.png" alt="Additional Logo">
-      </div>
+    const languages = [...new Set(data.map(item => item.Language))];
+    populateDropdown(languageSelect, languages);
 
-      <!-- How To Button -->
-      <div id="how-to">
-        <a href="HowtoVid.html">
-          <button id="how-to-button1" class="how-to-button1">How To</button>
-        </a>
-      </div>
+    const locations = [...new Set(data.map(item => item.Location))];
+    populateDropdown(locationSelect, locations);
+  })
+  .catch(error => console.error('Error loading JSON data:', error));
 
-      <!-- Language Selection -->
-      <div class="language-selection">
-        <label for="emp-lang-select">Choose Your Language:</label>
-        <select id="emp-lang-select">
-          <option value="english">English</option>
-          <option value="japanese">Japanese</option>
-          <option value="korean">Korean</option>
-          <option value="malay">Malay</option>
-          <option value="mandarin">Mandarin</option>
-          <option value="thai">Thai</option>
-        </select>
-      </div>
+// Populate a dropdown with options
+function populateDropdown(dropdown, options) {
+  dropdown.innerHTML = ''; // Clear previous options
+  dropdown.appendChild(new Option('--Select--', '')); // Default "Select" option
+  options.forEach(option => {
+    const opt = document.createElement('option');
+    opt.value = option;
+    opt.text = option;
+    dropdown.appendChild(opt);
+  });
+}
 
-      <!-- Spacer Divs -->
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
+// Update dropdown while keeping the current selected value if valid
+function updateDropdownWithSelectedValue(dropdown, options, currentValue) {
+  populateDropdown(dropdown, options);
+  if (options.includes(currentValue)) {
+    dropdown.value = currentValue;
+  } else {
+    dropdown.value = ''; // Reset to default if the current value is no longer valid
+  }
+}
 
-      <!-- BMS ID Input -->
-      <h2>Please Key In Your BMS ID</h2>
-      <input type="text" id="bms-id" placeholder="Key in your BMS ID here.">
+// Event listener for language selection
+document.getElementById('language-select').addEventListener('change', function () {
+  const selectedLanguage = this.value;
 
-      <h2>Please Select Your Referral's Preferences</h2>
-      <h3>Language:</h3>
-      <select id="language-select"></select>
+  // Filter locations based on the selected language
+  const filteredLocations = selectedLanguage
+    ? [...new Set(jsonData.filter(item => item.Language === selectedLanguage).map(item => item.Location))]
+    : [...new Set(jsonData.map(item => item.Location))];
 
-      <h3>Working Location:</h3>
-      <select id="location-select"></select>
+  // Update the locations dropdown
+  updateDropdownWithSelectedValue(
+    document.getElementById('location-select'),
+    filteredLocations,
+    document.getElementById('location-select').value
+  );
 
-      <h3>Job Position:</h3>
-      <select id="job-type-select"></select>
+  // Update jobs dropdown if both language and location are selected
+  updateJobsDropdown();
+});
 
-      <button onclick="nextStep()">Next</button>
+// Event listener for location selection
+document.getElementById('location-select').addEventListener('change', function () {
+  updateJobsDropdown();
+});
 
-      <!-- Follow Us Section -->
-      <h2>Follow Us On:</h2>
-      <div class="social-buttons">
-        <a href="https://www.facebook.com/teleperformance.malaysia/" target="_blank" class="social-btn fb-btn"></a>
-        <a href="https://www.instagram.com/teleperformance_malaysia/" target="_blank" class="social-btn ig-btn"></a>
-        <a href="https://www.youtube.com/@TeleperformanceGroup" target="_blank" class="social-btn yt-btn"></a>
-      </div>
-    </div>
+// Update jobs dropdown based on selected language and location
+function updateJobsDropdown() {
+  const selectedLanguage = document.getElementById('language-select').value;
+  const selectedLocation = document.getElementById('location-select').value;
 
-    <!-- Step 2: Thank You Message -->
-    <div class="popup-content" id="step2" style="display: none;">
-      <!-- Spacer Divs -->
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
+  if (selectedLanguage && selectedLocation) {
+    const jobs = jsonData
+      .filter(item => item.Language === selectedLanguage && item.Location === selectedLocation)
+      .map(item => item.Positions);
+    populateDropdown(document.getElementById('job-type-select'), jobs);
+  } else {
+    populateDropdown(document.getElementById('job-type-select'), []);
+  }
+}
 
-      <!-- Additional Logo -->
-      <div class="additional-logo">
-        <img src="assets/TPLogo11.png" alt="Additional Logo">
-      </div>
+// Generate referral link and move to the next step
+function nextStep() {
+  const bmsId = document.getElementById('bms-id').value;
+  if (!bmsId) {
+    alert("Please enter a valid BMS ID.");
+    return;
+  }
 
-      <!-- Spacer Divs -->
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
+  const selectedLanguage = document.getElementById('language-select').value;
+  const selectedLocation = document.getElementById('location-select').value;
+  const selectedJob = document.getElementById('job-type-select').value;
 
-      <!-- Refresh Button -->
-      <div id="refresh">
-        <button onclick="refreshPage()" class="refresh-btn">
-          <span class="material-icons">back</span>
-        </button>
-      </div>
+  const jobData = jsonData.find(
+    item => item.Language === selectedLanguage && item.Location === selectedLocation && item.Positions === selectedJob
+  );
 
-      <h2>Thank You for Your Referral!</h2>
-      <p>As we grow in Malaysia and Thailand, become #MoreTogether as we #ElevateAsia, here are the links your friend can use so this is tagged to your profile into our Recruiting System.</p>
-      <div id="generated-link"></div>
+  if (jobData) {
+    const finalLink = jobData["Evergreen link"] + bmsId;
+    document.getElementById('generated-link').innerHTML = `<a href="${finalLink}" target="_blank">${finalLink}</a>`;
+  }
 
-      <!-- Share Buttons -->
-      <button id="share-button-whatsapp" class="small-share-button">
-        Share Via <img src="assets/wh-removebg-preview.png" alt="WhatsApp Logo">
-      </button>
-      <button id="share-button-line" class="small-share-button">
-        Share Via <img src="assets/line_logo.png" alt="Line Logo">
-      </button>
-      <button id="share-button-facebook" class="small-share-button">
-        Share Via <img src="assets/FB-removebg-preview.png" alt="Facebook Logo">
-      </button>
-      <button id="share-button-IG" class="small-share-button">
-        Share Via <img src="assets/insta1-removebg-preview.png" alt="Instagram Logo">
-      </button>
-      <button id="share-button-TikTok" class="small-share-button">
-        Share Via <img src="assets/tiktok_logo-Photoroom.png" alt="TikTok Logo">
-      </button>
+  document.getElementById('step1').style.display = 'none';
+  document.getElementById('step2').style.display = 'block';
+}
 
-      <!-- QR Code Section -->
-      <div id="qrBox">
-        <img src="" id="qrImg">
-      </div>
-      <button id="scan-code-button" onclick="generateQrCode()">or have your friend scanning this code above!</button>
+// Refresh the page
+function refreshPage() {
+  location.reload();
+}
 
-      <!-- Messages -->
-      <p id="thank-you">Thank you for your referral!</p>
-      <p id="referral-message">As we grow in Malaysia and Thailand, become #MoreTogether as we #ElevateAsia, here are the links your friend can use so this is tagged to your profile into our Recruiting System.</p>
-      <h2 id="vr-message">They can visit our locations in VR so they learn of us:</h2>
+// Share via WhatsApp
+document.getElementById('share-button-whatsapp').addEventListener('click', function () {
+  const message = "🌟 Exciting news! Join our amazing team at Teleperformance! 🌟 We're expanding our family and want you to be a part of it. Click the link below to start your new journey :";
+  const message2 = "Let's grow together! 🚀 #JoinTheTeam";
+  const whatsappLink = `https://wa.me/?text=${encodeURIComponent(message + " " + document.getElementById('generated-link').querySelector('a').href + " " + message2)}`;
+  window.open(whatsappLink, "_blank");
+});
 
-      <!-- Picture Container -->
-      <div id="picture-container">
-        <img src="assets/MicrosoftTeams-image.png" alt="Description of the image">
-      </div>
-      <p id="talent-team-message">The Talent Attraction Team</p>
-    </div>
-  </main>
+// Share via Line
+document.getElementById('share-button-line').addEventListener('click', function () {
+  const message = "🌟 Exciting news! Join our amazing team at Teleperformance! 🌟 We're expanding our family and want you to be a part of it. Click the link below to start your new journey :";
+  const message2 = "Let's grow together! 🚀 #JoinTheTeam";
+  const lineLink = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(message + " " + document.getElementById('generated-link').querySelector('a').href + " " + message2)}`;
+  window.open(lineLink, "_blank");
+});
 
-  <script src="script.js"></script>
-</body>
-</html>
+// Share via Facebook
+document.getElementById('share-button-facebook').addEventListener('click', function () {
+  const facebookMessage = "🌟 Exciting news! Join our amazing team at Teleperformance! 🌟 We're expanding our family and want you to be a part of it. Click the link below to start your new journey :";
+  const facebookMessage2 = "Let's grow together! 🚀 #JoinTheTeam";
+  const facebookCaption = encodeURIComponent(facebookMessage + " " + document.getElementById('generated-link').querySelector('a').href + " " + facebookMessage2);
+  const facebookLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(document.getElementById('generated-link').querySelector('a').href)}&quote=${facebookCaption}`;
+  window.open(facebookLink, "_blank");
+});

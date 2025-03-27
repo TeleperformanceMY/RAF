@@ -33,6 +33,11 @@ body {
   filter: grayscale(100%); /* Convert logo to grayscale */
 }
 
+/* Spacer Divs */
+.spacer {
+  height: 20px; /* Adjust spacing as needed */
+}
+
 /* Popup Container Styling */
 .popup-container {
   width: 100%;
@@ -89,6 +94,31 @@ body {
 
 .popup-content button:hover {
   background-color: #333; /* Dark gray on hover */
+}
+
+/* Social Buttons */
+.social-btn {
+  padding: 10px;
+  border-radius: 50%; /* Circular buttons */
+  background-color: #000; /* Black background */
+  color: #fff; /* White text */
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  transition: background-color 0.3s ease;
+}
+
+.social-btn:hover {
+  background-color: #333; /* Dark gray on hover */
+}
+
+.social-btn img {
+  max-width: 100%;
+  height: auto;
+  filter: grayscale(100%); /* Convert social media icons to grayscale */
 }
 
 /* Responsive Design */

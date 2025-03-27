@@ -15,32 +15,156 @@
     </div>
   </header>
 
+  <!-- Spacer Divs -->
+  <div class="spacer"></div>
+  <div class="spacer"></div>
+  <div class="spacer"></div>
+  <div class="spacer"></div>
+  <div class="spacer"></div>
+  <div class="spacer"></div>
+
   <!-- Main Content -->
   <main class="popup-container">
     <div class="popup-content" id="step1">
+      <!-- Additional Logo -->
+      <div class="additional-logo">
+        <img src="assets/TPLogo11.png" alt="Additional Logo">
+      </div>
+
+      <!-- How To Button -->
+      <div id="how-to">
+        <a href="HowtoVid.html">
+          <button id="how-to-button1" class="how-to-button1">How To</button>
+        </a>
+      </div>
+
+      <!-- Language Selection -->
+      <div class="language-selection">
+        <label for="emp-lang-select">Choose Your Language:</label>
+        <select id="emp-lang-select">
+          <option value="english">English</option>
+          <option value="japanese">Japanese</option>
+          <option value="korean">Korean</option>
+          <option value="malay">Malay</option>
+          <option value="mandarin">Mandarin</option>
+          <option value="thai">Thai</option>
+        </select>
+      </div>
+
+      <!-- Spacer Divs -->
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+
+      <!-- BMS ID Input -->
       <h2>Please Key In Your BMS ID</h2>
       <input type="text" id="bms-id" placeholder="Key in your BMS ID here.">
 
-      <h3>Choose Your Referrer’s Preferences</h3>
-      <label for="language-select">Language:</label>
+      <h2>Please Select Your Referral's Preferences</h2>
+      <h3>Language:</h3>
       <select id="language-select"></select>
 
-      <label for="location-select">Working Location:</label>
+      <h3>Working Location:</h3>
       <select id="location-select"></select>
 
-      <label for="job-type-select">Job Position:</label>
+      <h3>Job Position:</h3>
       <select id="job-type-select"></select>
 
       <button onclick="nextStep()">Next</button>
+
+      <!-- Follow Us Section -->
+      <h2>Follow Us On:</h2>
+      <div class="social-buttons">
+        <a href="https://www.facebook.com/teleperformance.malaysia/" target="_blank" class="social-btn fb-btn"></a>
+        <a href="https://www.instagram.com/teleperformance_malaysia/" target="_blank" class="social-btn ig-btn"></a>
+        <a href="https://www.youtube.com/@TeleperformanceGroup" target="_blank" class="social-btn yt-btn"></a>
+      </div>
     </div>
 
+    <!-- Step 2: Thank You Message -->
     <div class="popup-content" id="step2" style="display: none;">
+      <!-- Spacer Divs -->
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+
+      <!-- Additional Logo -->
+      <div class="additional-logo">
+        <img src="assets/TPLogo11.png" alt="Additional Logo">
+      </div>
+
+      <!-- Spacer Divs -->
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+
+      <!-- Refresh Button -->
+      <div id="refresh">
+        <button onclick="refreshPage()" class="refresh-btn">
+          <span class="material-icons">back</span>
+        </button>
+      </div>
+
       <h2>Thank You for Your Referral!</h2>
       <p>As we grow in Malaysia and Thailand, become #MoreTogether as we #ElevateAsia, here are the links your friend can use so this is tagged to your profile into our Recruiting System.</p>
       <div id="generated-link"></div>
 
-      <!-- Back Button -->
-      <button onclick="refreshPage()">Back</button>
+      <!-- Share Buttons -->
+      <button id="share-button-whatsapp" class="small-share-button">
+        Share Via <img src="assets/wh-removebg-preview.png" alt="WhatsApp Logo">
+      </button>
+      <button id="share-button-line" class="small-share-button">
+        Share Via <img src="assets/line_logo.png" alt="Line Logo">
+      </button>
+      <button id="share-button-facebook" class="small-share-button">
+        Share Via <img src="assets/FB-removebg-preview.png" alt="Facebook Logo">
+      </button>
+      <button id="share-button-IG" class="small-share-button">
+        Share Via <img src="assets/insta1-removebg-preview.png" alt="Instagram Logo">
+      </button>
+      <button id="share-button-TikTok" class="small-share-button">
+        Share Via <img src="assets/tiktok_logo-Photoroom.png" alt="TikTok Logo">
+      </button>
+
+      <!-- QR Code Section -->
+      <div id="qrBox">
+        <img src="" id="qrImg">
+      </div>
+      <button id="scan-code-button" onclick="generateQrCode()">or have your friend scanning this code above!</button>
+
+      <!-- Messages -->
+      <p id="thank-you">Thank you for your referral!</p>
+      <p id="referral-message">As we grow in Malaysia and Thailand, become #MoreTogether as we #ElevateAsia, here are the links your friend can use so this is tagged to your profile into our Recruiting System.</p>
+      <h2 id="vr-message">They can visit our locations in VR so they learn of us:</h2>
+
+      <!-- Picture Container -->
+      <div id="picture-container">
+        <img src="assets/MicrosoftTeams-image.png" alt="Description of the image">
+      </div>
+      <p id="talent-team-message">The Talent Attraction Team</p>
     </div>
   </main>
 

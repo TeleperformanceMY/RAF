@@ -28,44 +28,41 @@
     <div class="popup-content" id="step1">
       <!-- Language Selection -->
       <div class="language-selection">
-        <label for="language-select">Choose Your Language:</label>
-        <select id="language-select"></select>
+        <label for="emp-lang-select">Choose Your Language:</label>
+        <select id="emp-lang-select"></select>
       </div>
 
       <!-- Spacer Divs -->
       <div class="spacer"></div>
       <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
 
       <!-- BMS ID Input -->
-      <h2>Please Key In Your BMS ID</h2>
+      <h2 id="enter-bms-label">Please Key In Your BMS ID</h2>
       <input type="text" id="bms-id" placeholder="Key in your BMS ID here.">
 
-      <h2>Please Select Your Referral's Preferences</h2>
-      <h3>Language:</h3>
-      <select id="emp-lang-select"></select>
+      <!-- Referral Preferences -->
+      <h2 id="choose-preferences-label">Choose Your Referral's Preferences</h2>
 
-      <h3>Working Location:</h3>
+      <h3 id="job-language-label">Job Language:</h3>
+      <select id="language-select"></select>
+
+      <h3 id="location-label">Working Location:</h3>
       <select id="location-select"></select>
 
-      <h3>Job Position:</h3>
+      <h3 id="job-position-label">Job Position:</h3>
       <select id="job-type-select"></select>
 
-      <button onclick="nextStep()">Next</button>
+      <button id="next-button" onclick="nextStep()">Next</button>
     </div>
 
     <!-- Step 2: Thank You Message -->
     <div class="popup-content" id="step2" style="display: none;">
-      <h2>Thank You for Your Referral!</h2>
-      <p>As we grow in Malaysia and Thailand, become #MoreTogether as we #ElevateAsia, here are the links your friend can use so this is tagged to your profile into our Recruiting System.</p>
+      <h2 id="thank-you-message">Thank You for Your Referral!</h2>
+      <p id="referral-message">As we grow in Malaysia and Thailand, become #MoreTogether as we #ElevateAsia, here are the links your friend can use so this is tagged to your profile into our Recruiting System.</p>
       <div id="generated-link"></div>
 
       <!-- QR Code Section -->
       <div id="qr-code">
-        <canvas id="qr-canvas"></canvas>
         <img src="" id="qrImg" alt="QR Code">
       </div>
       <button id="scan-code-button" onclick="generateQrCode()">or have your friend scanning this code above!</button>
@@ -88,7 +85,7 @@
       </button>
 
       <!-- Back Button -->
-      <button onclick="refreshPage()">Back</button>
+      <button id="back-button" onclick="refreshPage()">Back</button>
     </div>
   </main>
 

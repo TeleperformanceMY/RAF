@@ -201,8 +201,4 @@ document.getElementById('share-button-line').addEventListener('click', function 
 // Share via Facebook
 document.getElementById('share-button-facebook').addEventListener('click', function () {
   const facebookMessage = "🌟 Exciting news! Join our amazing team at Teleperformance! 🌟 We're expanding our family and want you to be a part of it. Click the link below to start your new journey :";
-  const facebookMessage2 = "Let's grow together! 🚀 #JoinTheTeam";
-  const facebookCaption = encodeURIComponent(facebookMessage + " " + generatedLink.querySelector('a').href + " " + facebookMessage2);
-  const facebookLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(generatedLink.querySelector('a').href)}&quote=${facebookCaption}`;
-  window.open(facebookLink, "_blank");
-});
+  const facebookMessage2 = "Let's grow together! 🚀 #JoinThe

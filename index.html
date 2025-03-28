@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Refer A Friend</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -18,36 +18,24 @@
   <!-- Spacer Divs -->
   <div class="spacer"></div>
   <div class="spacer"></div>
+  <div class="spacer"></div>
+  <div class="spacer"></div>
+  <div class="spacer"></div>
+  <div class="spacer"></div>
 
   <!-- Main Content -->
   <main class="popup-container">
     <div class="popup-content" id="step1">
-      <!-- Additional Logo -->
-      <div class="additional-logo">
-        <img src="TPLogo11.png" alt="Additional Logo">
-      </div>
-
-      <!-- How To Button -->
-      <div id="how-to">
-        <a href="HowtoVid.html">
-          <button id="how-to-button1" class="how-to-button1">How To</button>
-        </a>
-      </div>
-
       <!-- Language Selection -->
       <div class="language-selection">
-        <label for="emp-lang-select">Choose Your Language:</label>
-        <select id="emp-lang-select">
-          <option value="english">English</option>
-          <option value="japanese">Japanese</option>
-          <option value="korean">Korean</option>
-          <option value="malay">Malay</option>
-          <option value="mandarin">Mandarin</option>
-          <option value="thai">Thai</option>
-        </select>
+        <label for="language-select">Choose Your Language:</label>
+        <select id="language-select"></select>
       </div>
 
       <!-- Spacer Divs -->
+      <div class="spacer"></div>
+      <div class="spacer"></div>
+      <div class="spacer"></div>
       <div class="spacer"></div>
       <div class="spacer"></div>
       <div class="spacer"></div>
@@ -58,7 +46,7 @@
 
       <h2>Please Select Your Referral's Preferences</h2>
       <h3>Language:</h3>
-      <select id="language-select"></select>
+      <select id="emp-lang-select"></select>
 
       <h3>Working Location:</h3>
       <select id="location-select"></select>
@@ -67,63 +55,20 @@
       <select id="job-type-select"></select>
 
       <button onclick="nextStep()">Next</button>
-
-      <!-- Follow Us Section -->
-      <h2>Follow Us On:</h2>
-      <div class="social-buttons">
-        <a href="https://www.facebook.com/teleperformance.malaysia/" target="_blank" class="social-btn fb-btn"></a>
-        <a href="https://www.instagram.com/teleperformance_malaysia/" target="_blank" class="social-btn ig-btn"></a>
-        <a href="https://www.youtube.com/@TeleperformanceGroup" target="_blank" class="social-btn yt-btn"></a>
-      </div>
     </div>
 
     <!-- Step 2: Thank You Message -->
     <div class="popup-content" id="step2" style="display: none;">
-      <!-- Spacer Divs -->
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-
-      <!-- Additional Logo -->
-      <div class="additional-logo">
-        <img src="TPLogo11.png" alt="Additional Logo">
-      </div>
-
-      <!-- Spacer Divs -->
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-      <div class="spacer"></div>
-
-      <!-- Refresh Button -->
-      <div id="refresh">
-        <button onclick="refreshPage()" class="refresh-btn">
-          <span class="material-icons">back</span>
-        </button>
-      </div>
-
       <h2>Thank You for Your Referral!</h2>
       <p>As we grow in Malaysia and Thailand, become #MoreTogether as we #ElevateAsia, here are the links your friend can use so this is tagged to your profile into our Recruiting System.</p>
       <div id="generated-link"></div>
+
+      <!-- QR Code Section -->
+      <div id="qr-code">
+        <canvas id="qr-canvas"></canvas>
+        <img src="" id="qrImg" alt="QR Code">
+      </div>
+      <button id="scan-code-button" onclick="generateQrCode()">or have your friend scanning this code above!</button>
 
       <!-- Share Buttons -->
       <button id="share-button-whatsapp" class="small-share-button">
@@ -142,22 +87,8 @@
         Share Via <img src="tiktok_logo-Photoroom.png" alt="TikTok Logo">
       </button>
 
-      <!-- QR Code Section -->
-      <div id="qrBox">
-        <img src="" id="qrImg">
-      </div>
-      <button id="scan-code-button" onclick="generateQrCode()">or have your friend scanning this code above!</button>
-
-      <!-- Messages -->
-      <p id="thank-you">Thank you for your referral!</p>
-      <p id="referral-message">As we grow in Malaysia and Thailand, become #MoreTogether as we #ElevateAsia, here are the links your friend can use so this is tagged to your profile into our Recruiting System.</p>
-      <h2 id="vr-message">They can visit our locations in VR so they learn of us:</h2>
-
-      <!-- Picture Container -->
-      <div id="picture-container">
-        <img src="MicrosoftTeams-image.png" alt="Description of the image">
-      </div>
-      <p id="talent-team-message">The Talent Attraction Team</p>
+      <!-- Back Button -->
+      <button onclick="refreshPage()">Back</button>
     </div>
   </main>
 

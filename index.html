@@ -1,94 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Refer A Friend</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Refer a friend to Teleperformance Malaysia">
+    
+    <!-- Preconnect to CDN for better performance -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <title>Refer A Friend - Teleperformance</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Header with Logo -->
-  <header class="header">
-    <div class="logo-container">
-      <img src="TPLogo11.png" alt="Logo" class="logo">
-    </div>
-  </header>
+    <header class="top-bar" aria-label="Navigation bar">
+        <!-- Consider adding navigation here if needed -->
+    </header>
 
-  <!-- Spacer Divs -->
-  <div class="spacer"></div>
-  <div class="spacer"></div>
-  <div class="spacer"></div>
-  <div class="spacer"></div>
-  <div class="spacer"></div>
-  <div class="spacer"></div>
+    <main class="container">
+        <!-- Logo Section -->
+        <section class="logo-container" aria-label="Company logo">
+            <img src="TPLogo11.png" alt="Teleperformance Logo" width="200" height="auto">
+        </section>
 
-  <!-- Main Content -->
-  <main class="popup-container">
-    <div class="popup-content" id="step1">
-      <!-- Language Selection -->
-      <div class="language-selection">
-        <label for="emp-lang-select">Choose Your Language:</label>
-        <select id="emp-lang-select"></select>
-      </div>
+        <!-- Main Form Section -->
+        <section class="popup-container" role="region" aria-label="Referral form">
+            <!-- Step 1: Form Input -->
+            <div class="popup-content" id="step1">
+                <div class="additional-logo">
+                    <img src="TPLogo11.png" alt="Teleperformance Logo" width="150" height="auto">
+                </div>
+                
+                <!-- How To Button -->
+                <div id="how-to">
+                    <a href="HowtoVid.html" class="btn btn-outline-primary how-to-button1">
+                        <i class="fas fa-question-circle"></i> How To
+                    </a>
+                </div>
+                
+                <!-- Language Selection -->
+                <div class="language-selection mb-4">
+                    <label for="emp-lang-select" class="form-label">Choose Your Language:</label>
+                    <select id="emp-lang-select" class="form-select">
+                        <option value="english">English</option>
+                        <option value="japanese">Japanese</option>
+                        <option value="korean">Korean</option>
+                        <option value="malay">Malay</option>
+                        <option value="mandarin">Mandarin</option>
+                        <option value="thai">Thai</option>
+                    </select>
+                </div>
 
-      <!-- Spacer Divs -->
-      <div class="spacer"></div>
-      <div class="spacer"></div>
+                <!-- Form Fields -->
+                <form id="referral-form">
+                    <div class="mb-3">
+                        <label for="bms-id" class="form-label">Please enter your BMS ID</label>
+                        <input type="text" class="form-control" id="bms-id" placeholder="Enter your BMS ID here" required>
+                    </div>
 
-      <!-- BMS ID Input -->
-      <h2 id="enter-bms-label">Please Key In Your BMS ID</h2>
-      <input type="text" id="bms-id" placeholder="Key in your BMS ID here.">
+                    <h2 class="h4">Please select your referral's preferences</h2>
+                    
+                    <div class="mb-3">
+                        <label for="language-select" class="form-label">Language:</label>
+                        <select id="language-select" class="form-select" required>
+                            <!-- Dynamically populated -->
+                        </select>
+                    </div>
 
-      <!-- Referral Preferences -->
-      <h2 id="choose-preferences-label">Choose Your Referral's Preferences</h2>
+                    <div class="mb-3">
+                        <label for="location-select" class="form-label">Working location:</label>
+                        <select id="location-select" class="form-select" required>
+                            <!-- Dynamically populated -->
+                        </select>
+                    </div>
 
-      <h3 id="job-language-label">Job Language:</h3>
-      <select id="language-select"></select>
+                    <div class="mb-3">
+                        <label for="job-type-select" class="form-label">Job Position:</label>
+                        <select id="job-type-select" class="form-select" required>
+                            <!-- Dynamically populated -->
+                        </select>
+                    </div>
 
-      <h3 id="location-label">Working Location:</h3>
-      <select id="location-select"></select>
+                    <div class="job-preview mb-4">
+                        <h3 id="job-title-display" class="h5"></h3>
+                        <a id="job-link-display" href="#" target="_blank" class="btn btn-sm btn-outline-secondary">View Job Details</a>
+                    </div>
 
-      <h3 id="job-position-label">Job Position:</h3>
-      <select id="job-type-select"></select>
+                    <button type="button" onclick="nextStep()" class="btn btn-primary w-100 py-2">
+                        Next <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </form>
 
-      <button id="next-button" onclick="nextStep()">Next</button>
-    </div>
+                <!-- Social Media Section -->
+                <div class="social-section mt-5">
+                    <h2 class="h5 text-center mb-3">Follow Us On:</h2>
+                    <div class="social-buttons d-flex justify-content-center gap-3">
+                        <a href="https://www.facebook.com/teleperformance.malaysia/" target="_blank" class="social-btn fb-btn" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://www.instagram.com/teleperformance_malaysia/" target="_blank" class="social-btn ig-btn" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.youtube.com/@TeleperformanceGroup" target="_blank" class="social-btn yt-btn" aria-label="YouTube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
 
-    <!-- Step 2: Thank You Message -->
-    <div class="popup-content" id="step2" style="display: none;">
-      <h2 id="thank-you-message">Thank You for Your Referral!</h2>
-      <p id="referral-message">As we grow in Malaysia and Thailand, become #MoreTogether as we #ElevateAsia, here are the links your friend can use so this is tagged to your profile into our Recruiting System.</p>
-      <div id="generated-link"></div>
+            <!-- Step 2: Thank You & Sharing -->
+            <div class="popup-content" id="step2" style="display: none;">
+                <div class="additional-logo mb-4">
+                    <img src="TPLogo11.png" alt="Teleperformance Logo" width="150" height="auto">
+                </div>
 
-      <!-- QR Code Section -->
-      <div id="qr-code">
-        <img src="" id="qrImg" alt="QR Code">
-      </div>
-      <button id="scan-code-button" onclick="generateQrCode()">or have your friend scanning this code above!</button>
+                <button onclick="refreshPage()" class="btn btn-outline-secondary mb-4">
+                    <i class="fas fa-arrow-left me-2"></i> Back
+                </button>
 
-      <!-- Share Buttons -->
-      <button id="share-button-whatsapp" class="small-share-button">
-        Share Via <img src="wh-removebg-preview.png" alt="WhatsApp Logo">
-      </button>
-      <button id="share-button-line" class="small-share-button">
-        Share Via <img src="line_logo.png" alt="Line Logo">
-      </button>
-      <button id="share-button-facebook" class="small-share-button">
-        Share Via <img src="FB-removebg-preview.png" alt="Facebook Logo">
-      </button>
-      <button id="share-button-IG" class="small-share-button">
-        Share Via <img src="insta1-removebg-preview.png" alt="Instagram Logo">
-      </button>
-      <button id="share-button-TikTok" class="small-share-button">
-        Share Via <img src="tiktok_logo-Photoroom.png" alt="TikTok Logo">
-      </button>
+                <div class="thank-you-content text-center">
+                    <h2 class="h3 mb-3">Thank you for your referral!</h2>
+                    <p class="lead mb-4">As we grow in Malaysia and Thailand, become #MoreTogether as we #ElevateAsia. Here's the link your friend can use to apply, tagged to your profile in our Recruiting System.</p>
+                    
+                    <div id="generated-link" class="alert alert-info mb-4" role="alert">
+                        <!-- Link will be generated here -->
+                    </div>
 
-      <!-- Back Button -->
-      <button id="back-button" onclick="refreshPage()">Back</button>
-    </div>
-  </main>
+                    <!-- Share Buttons -->
+                    <div class="share-buttons d-flex flex-wrap justify-content-center gap-2 mb-4">
+                        <button id="share-button-whatsapp" class="btn btn-success">
+                            <i class="fab fa-whatsapp me-2"></i> WhatsApp
+                        </button>
+                        <button id="share-button-line" class="btn btn-success" style="background-color: #00B900;">
+                            <i class="fab fa-line me-2"></i> Line
+                        </button>
+                        <button id="share-button-facebook" class="btn btn-primary">
+                            <i class="fab fa-facebook-f me-2"></i> Facebook
+                        </button>
+                        <button id="share-button-IG" class="btn btn-instagram">
+                            <i class="fab fa-instagram me-2"></i> Instagram
+                        </button>
+                        <button id="share-button-TikTok" class="btn btn-dark">
+                            <i class="fab fa-tiktok me-2"></i> TikTok
+                        </button>
+                    </div>
 
-  <script src="script.js"></script>
+                    <!-- QR Code Section -->
+                    <div class="qr-section mb-4">
+                        <div id="qrBox" class="mb-3">
+                            <img src="" id="qrImg" alt="QR Code" class="img-fluid">
+                        </div>
+                        <button id="scan-code-button" onclick="generateQrCode()" class="btn btn-outline-primary">
+                            <i class="fas fa-qrcode me-2"></i> Generate QR Code for your friend
+                        </button>
+                    </div>
+
+                    <!-- VR Section -->
+                    <div class="vr-section mt-5">
+                        <h2 class="h5 mb-3">They can visit our locations in VR to learn more about us:</h2>
+                        <div id="picture-container" class="mb-3">
+                            <img src="MicrosoftTeams-image.png" alt="Teleperformance VR Tour Preview" class="img-fluid rounded">
+                        </div>
+                    </div>
+
+                    <p class="signature mt-4">The Talent Attraction Team</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    
+    <!-- Your custom script -->
+    <script src="script.js"></script>
 </body>
 </html>

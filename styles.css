@@ -1,4 +1,18 @@
-/* General Reset */
+:root {
+  --primary-color: #2c3e50;
+  --secondary-color: #3498db;
+  --accent-color: #e74c3c;
+  --light-gray: #f5f5f5;
+  --medium-gray: #ccc;
+  --dark-gray: #333;
+  --white: #fff;
+  --black: #000;
+  --border-radius: 10px;
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+}
+
+/* Base Styles */
 * {
   margin: 0;
   padding: 0;
@@ -6,265 +20,362 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background-color: #fff; /* White background */
-  color: #000; /* Black text */
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: var(--white);
+  color: var(--black);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  padding: 1rem;
+  line-height: 1.6;
 }
 
-/* Header Styling */
+/* Typography */
+h1, h2, h3, h4 {
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  color: var(--primary-color);
+}
+
+h2 {
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+/* Layout Components */
 .header {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-  background-color: #fff; /* White header */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+  background-color: var(--white);
+  box-shadow: var(--box-shadow);
+  position: relative;
+  z-index: 10;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
 }
 
 .logo-container img {
   max-width: 100px;
   height: auto;
-  filter: grayscale(100%); /* Convert logo to grayscale */
+  filter: grayscale(100%);
+  transition: var(--transition);
 }
 
-/* Spacer Divs */
+.logo-container img:hover {
+  filter: grayscale(0%);
+}
+
+/* Spacer Utility */
 .spacer {
-  height: 20px; /* Adjust spacing as needed */
+  height: 1rem;
 }
 
-/* Popup Container Styling */
+/* Form Container */
 .popup-container {
-  width: 80%; /* Adjust the width as needed */
-  max-width: 600px;
-  margin: auto; /* Center the body horizontally */
-  padding: 50px 50px 50px 60px; /* Adjust padding to move content up */
-  background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
-  border-radius: 40px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  position: relative;
+  width: min(95%, 600px);
+  margin: 1rem auto;
+  padding: 1.5rem;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
   text-align: center;
   display: flex;
-  flex-direction: column; /* Set flex direction to column */
-  justify-content: center; /* Center content vertically */
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  position: relative;
 }
 
-.popup-content h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #000; /* Black text */
-}
-
-.popup-content input,
-.popup-content select {
-  width: calc(100% - 20px); /* Subtract padding from width */
-  padding: 12px;
-  margin-bottom: 20px;
-  border: 2px solid #ccc; /* Light gray border */
-  border-radius: 10px;
-  font-size: 16px; /* Larger font size */
-  transition: border-color 0.3s; /* Smooth border transition */
-  background-color: #f5f5f5; /* Light gray background */
-  color: #000; /* Black text */
-}
-
-.popup-content input:focus {
-  outline: none; /* Remove default focus outline */
-  border-color: #666; /* Medium gray border color on focus */
-}
-
-/* Dropdown styling */
-select {
-  padding: 8px 15px;
-  font-size: 16px;
-  border: 1px solid #ccc; /* Light gray border */
-  border-radius: 5px;
-  background-color: #fff; /* White background */
-  color: #000; /* Black text */
-  transition: all 0.3s ease;
+/* Form Elements */
+.form-group {
   width: 100%;
-  appearance: none; /* Remove default arrow */
-  background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 12px;
-  cursor: pointer; /* Add pointer cursor */
+  margin-bottom: 1.25rem;
+  text-align: left;
 }
 
-/* Dropdown Hover Effect */
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--dark-gray);
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--medium-gray);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  transition: var(--transition);
+  background-color: var(--light-gray);
+  color: var(--black);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+/* Custom Select Styling */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.select-wrapper::after {
+  content: '▼';
+  font-size: 0.75rem;
+  color: var(--dark-gray);
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+select {
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  font-size: 1rem;
+  border: 2px solid var(--medium-gray);
+  border-radius: var(--border-radius);
+  background-color: var(--white);
+  color: var(--black);
+  transition: var(--transition);
+  appearance: none;
+  cursor: pointer;
+}
+
 select:hover,
 select:focus {
-  background-color: #f5f5f5; /* Light gray background */
-  border-color: #ccc; /* Light gray border */
+  border-color: var(--secondary-color);
 }
 
-/* Dropdown Options Styling */
 select option {
-  font-size: 18px; /* Increase font size for options */
-  padding: 10px; /* Add padding for better spacing */
-  background-color: #fff; /* White background */
-  color: #000; /* Black text */
-  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for option hover */
-}
-
-/* Styling for Hovered Options */
-select:hover option {
-  background-color: #eaeaea; /* Light gray background for hovered option */
-  color: #000; /* Black text */
-}
-
-/* Styling for Selected Option */
-select option:checked {
-  background-color: #ccc; /* Medium gray for selected option */
-  color: #000; /* Black text */
-  font-weight: bold; /* Make selected option bold */
+  padding: 0.5rem;
+  background-color: var(--white);
+  color: var(--black);
 }
 
 /* Buttons */
-.popup-content button {
-  padding: 10px 20px;
-  background-color: #333; /* Dark gray buttons */
-  color: #fff; /* White text */
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.popup-content button:hover {
-  background-color: #666; /* Medium gray on hover */
-}
-
-/* QR Code Section */
-#qr-code {
-  margin-top: 20px;
-  text-align: center;
-  position: relative;
-}
-
-#qr-code img {
-  width: 200px;
-  height: 200px;
-  border: 1px solid #ccc; /* Light gray border */
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  filter: grayscale(100%); /* Convert QR code to grayscale */
-}
-
-/* Social Media Icons */
-.small-share-button img {
-  width: 20px;
-  height: 20px;
-  filter: grayscale(100%); /* Convert icons to grayscale */
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .popup-container {
-    padding: 15px;
-  }
-
-  .popup-content h2 {
-    font-size: 20px;
-  }
-
-  .popup-content input,
-  .popup-content select {
-    padding: 8px;
-  }
-}
-
-/* Additional Styles (Unchanged) */
-.additional-logo {
-  display: flex;
-  position: absolute;
-  top: -100px; /* Adjust as needed */
-  right: 150px; /* Adjust as needed */
+.btn {
+  display: inline-flex;
   align-items: center;
-  justify-content: flex-start; /* Align content to the start (left) */
-  transform: scale(0.2); /* Maintain the scale */
-  padding: 5px; /* Adjust for desired spacing around the logo */
-  border-radius: 5px; /* Adjust to create rounded corners */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow */
-}
-
-/* Dropdown Label Styling */
-.popup-content > div:not(.additional-logo) > label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: #333; /* Change label color */
-}
-
-/* Next Button Styling */
-.popup-content button {
-  padding: 10px 10px;
-  background-color: #333; /* Dark gray buttons */
-  color: #fff; /* White text */
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
   border: none;
+  border-radius: var(--border-radius);
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: var(--transition);
+  text-decoration: none;
+  gap: 0.5rem;
 }
 
-.popup-content button:hover {
-  background-color: #666; /* Medium gray on hover */
+.btn-primary {
+  background-color: var(--primary-color);
+  color: var(--white);
 }
 
-/* Picture Container Styling */
-#picture-container {
-  margin-top: 20px; /* Adjust spacing */
-  text-align: center; /* Center the image */
-  position: relative;
+.btn-primary:hover {
+  background-color: #1a252f;
+  transform: translateY(-2px);
 }
 
-#picture-container img {
-  width: 200px; /* Set the width to match the QR code size */
-  height: 200px; /* Set the height to match the QR code size */
-  border: 1px solid #ccc; /* Add a border for clarity */
-  border-radius: 5px; /* Add border radius for rounded corners */
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
-  filter: grayscale(100%); /* Convert image to grayscale */
+.btn-outline {
+  background-color: transparent;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
 }
 
-/* Video Container Styling */
-.video-container {
+.btn-outline:hover {
+  background-color: var(--primary-color);
+  color: var(--white);
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+/* Social Media */
+.social-buttons {
   display: flex;
   justify-content: center;
-  margin: 20px 0;
+  gap: 1rem;
+  margin: 1.5rem 0;
 }
 
-.video-container iframe {
-  max-width: 100%;
-  border: none;
+.social-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: var(--light-gray);
+  color: var(--dark-gray);
+  transition: var(--transition);
 }
 
-/* Media Query for Mobile Responsiveness */
-@media screen and (min-width: 768px) {
-  input,
-  select {
-    width: fit-content;
-    margin-right: 20px;
-    font-size: 20px; /* Larger font size */
-    margin-bottom: 20px;
+.social-btn:hover {
+  transform: translateY(-3px) scale(1.1);
+}
+
+.fb-btn { background-color: #3b5998; color: white; }
+.ig-btn { background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d); color: white; }
+.yt-btn { background-color: #ff0000; color: white; }
+
+/* QR Code Section */
+.qr-section {
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+#qrBox {
+  margin: 1rem auto;
+  padding: 1rem;
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  display: inline-block;
+}
+
+#qrImg {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  filter: grayscale(100%);
+  transition: var(--transition);
+}
+
+#qrImg:hover {
+  filter: grayscale(0%);
+}
+
+/* Additional Logo */
+.additional-logo {
+  position: absolute;
+  top: -30px;
+  right: 20px;
+  transform: scale(0.3);
+  z-index: 1;
+}
+
+.additional-logo img {
+  max-width: 80px;
+  max-height: 80px;
+  height: auto;
+  filter: grayscale(100%);
+}
+
+/* Share Buttons */
+.share-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+.share-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Utility Classes */
+.text-center { text-align: center; }
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mt-3 { margin-top: 1.5rem; }
+
+/* Responsive Adjustments */
+@media (min-width: 768px) {
+  .popup-container {
+    padding: 2rem;
   }
 
-  /* Button Styles */
-  #how-to button:hover {
-    background-color: #666; /* Medium gray on hover */
+  .additional-logo {
+    transform: scale(0.4);
+    top: -40px;
   }
 
-  #header {
+  #qrImg {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 0.5rem;
+  }
+
+  .popup-container {
+    padding: 1.25rem;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .share-buttons {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
   }
 
-  #how-to {
-    margin-top: 0;
+  .share-btn {
+    justify-content: center;
+  }
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.popup-content {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background-color: white;
+    padding: 0;
+  }
+
+  .popup-container {
+    box-shadow: none;
+    border-radius: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .social-buttons, 
+  .additional-logo,
+  .header {
+    display: none;
   }
 }

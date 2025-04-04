@@ -1,19 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     // DOM Elements
     const elements = {
-        // Language Selection
-        pageLangSelect: document.getElementById('page-lang-select'),
-        pageLangLabel: document.getElementById('page-lang-label'),
-        
         // Form Elements
+        pageLangSelect: document.getElementById('page-lang-select'),
         bmsId: document.getElementById('bms-id'),
-        bmsIdLabel: document.getElementById('bms-id-label'),
         jobLangSelect: document.getElementById('job-lang-select'),
-        jobLangLabel: document.getElementById('job-lang-label'),
         locationSelect: document.getElementById('location-select'),
-        locationLabel: document.getElementById('location-label'),
         jobSelect: document.getElementById('job-select'),
-        jobLabel: document.getElementById('job-label'),
         
         // Steps
         step1: document.getElementById('step1'),
@@ -24,72 +17,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // Referral Link
         referralLink: document.getElementById('referral-link'),
         copyBtn: document.getElementById('copy-btn'),
-        copyText: document.getElementById('copy-text'),
         
         // QR Code
-        qrCode: document.getElementById('qr-code'),
-        
-        // Social Media
-        malaysiaSocial: document.getElementById('malaysia-social'),
-        thailandSocial: document.getElementById('thailand-social'),
-        
-        // Text Elements
-        jobSelectionTitle: document.getElementById('job-selection-title'),
-        thankYouTitle: document.getElementById('thank-you-title'),
-        referralMessage: document.getElementById('referral-message'),
-        scanText: document.getElementById('scan-text'),
-        followUs: document.getElementById('follow-us'),
-        backText: document.getElementById('back-text')
+        qrCode: document.getElementById('qr-code')
     };
 
     // Application Data
     let jsonData = [];
-    let currentLocation = '';
-
-    // Translations
-    const translations = {
-        english: {
-            pageLangLabel: "Choose Your Language:",
-            bmsIdLabel: "Please enter your BMS ID:",
-            jobSelectionTitle: "Please select your referral's preferences",
-            jobLangLabel: "Job Language:",
-            locationLabel: "Working Location:",
-            jobLabel: "Job Position:",
-            nextBtn: "Next",
-            thankYouTitle: "Thank you for your referral!",
-            referralMessage: "Here's the personalized link for your friend to apply:",
-            scanText: "Or scan this QR code to apply",
-            followUs: "Follow Us On:",
-            backText: "Back",
-            copyText: "Copy",
-            malaysiaSocial: "Malaysia Social Media:",
-            thailandSocial: "Thailand Social Media:"
-        },
-        japanese: {
-            pageLangLabel: "言語を選択してください:",
-            bmsIdLabel: "BMS IDを入力してください:",
-            jobSelectionTitle: "紹介者の希望を選択してください",
-            jobLangLabel: "求人言語:",
-            locationLabel: "勤務地:",
-            jobLabel: "職種:",
-            nextBtn: "次へ",
-            thankYouTitle: "ご紹介ありがとうございます!",
-            referralMessage: "友達が応募するためのパーソナライズされたリンクです:",
-            scanText: "またはこのQRコードをスキャンして応募",
-            followUs: "フォローしてください:",
-            backText: "戻る",
-            copyText: "コピー",
-            malaysiaSocial: "マレーシアのソーシャルメディア:",
-            thailandSocial: "タイのソーシャルメディア:"
-        },
-        // Add other languages as needed
-    };
 
     // Initialize the application
     function init() {
         loadData();
         setupEventListeners();
-        updatePageContent('english'); // Default language
     }
 
     // Load JSON data
@@ -143,28 +82,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Update page content based on selected language
-    function updatePageContent(language) {
-        const translation = translations[language] || translations.english;
-        
-        // Update form labels
-        elements.pageLangLabel.textContent = translation.pageLangLabel;
-        elements.bmsIdLabel.textContent = translation.bmsIdLabel;
-        elements.jobSelectionTitle.textContent = translation.jobSelectionTitle;
-        elements.jobLangLabel.textContent = translation.jobLangLabel;
-        elements.locationLabel.textContent = translation.locationLabel;
-        elements.jobLabel.textContent = translation.jobLabel;
-        elements.nextBtn.textContent = translation.nextBtn;
-        
-        // Update step 2 content
-        elements.thankYouTitle.textContent = translation.thankYouTitle;
-        elements.referralMessage.textContent = translation.referralMessage;
-        elements.scanText.textContent = translation.scanText;
-        elements.followUs.textContent = translation.followUs;
-        elements.backText.textContent = translation.backText;
-        elements.copyText.textContent = translation.copyText;
-    }
-
     // Generate and display referral link
     function generateReferralLink() {
         const bmsId = elements.bmsId.value.trim();
@@ -181,7 +98,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const language = elements.jobLangSelect.value;
         const location = elements.locationSelect.value;
-        currentLocation = location.toLowerCase();
         
         const jobData = jsonData.find(
             item => item.Language === language && 
@@ -193,17 +109,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const referralLink = `${jobData['Evergreen link']}${bmsId}`;
             elements.referralLink.value = referralLink;
             generateQrCode(referralLink);
-            
-            // Show location-specific social media
-            elements.malaysiaSocial.style.display = 'none';
-            elements.thailandSocial.style.display = 'none';
-            
-            if (currentLocation.includes('malaysia')) {
-                elements.malaysiaSocial.style.display = 'block';
-            } else if (currentLocation.includes('thailand')) {
-                elements.thailandSocial.style.display = 'block';
-            }
-            
             return true;
         }
         return false;
@@ -218,9 +123,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function copyToClipboard() {
         elements.referralLink.select();
         document.execCommand('copy');
-        elements.copyText.textContent = 'Copied!';
+        elements.copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
         setTimeout(() => {
-            elements.copyText.textContent = translations[elements.pageLangSelect.value]?.copyText || 'Copy';
+            elements.copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
         }, 2000);
     }
 
@@ -240,11 +145,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Setup event listeners
     function setupEventListeners() {
-        // Page language change
-        elements.pageLangSelect.addEventListener('change', function() {
-            updatePageContent(this.value);
-        });
-        
         // Job language change
         elements.jobLangSelect.addEventListener('change', function() {
             updateJobsDropdown();

@@ -36,7 +36,7 @@
                     <!-- BMS ID Input -->
                     <div class="mb-3">
                         <label for="bms-id" class="form-label" data-translate="bmsIdLabel">Please enter your BMS ID:</label>
-                        <input type="text" id="bms-id" class="form-control" data-translate-placeholder="bmsIdPlaceholder">
+                        <input type="text" id="bms-id" class="form-control" data-translate-placeholder="bmsIdPlaceholder" placeholder="Enter your BMS ID">
                     </div>
 
                     <!-- Job Selection -->
@@ -57,22 +57,28 @@
                         <select id="job-select" class="form-select"></select>
                     </div>
 
-                    <button id="next-btn" class="btn btn-primary w-100" data-translate="nextBtn">Next</button>
+                    <button id="next-btn" class="btn btn-primary w-100" data-translate="nextBtn" aria-label="Proceed to next step">Next</button>
 
                     <!-- Social Media - Global -->
                     <div class="mt-4 text-center">
                         <h5 data-translate="followUs">Follow Us On:</h5>
                         <div class="d-flex justify-content-center gap-3 mt-2">
-                            <a href="https://www.youtube.com/@TeleperformanceGroup" class="social-icon youtube"><i class="fab fa-youtube"></i></a>
-                            <a href="https://www.linkedin.com/company/teleperformance" class="social-icon linkedin"><i class="fab fa-linkedin"></i></a>
-                            <a href="https://twitter.com/teleperformance" class="social-icon twitter"><i class="fab fa-twitter"></i></a>
+                            <a href="https://www.youtube.com/@TeleperformanceGroup" target="_blank" rel="noopener noreferrer" class="social-icon youtube" data-bs-toggle="tooltip" data-bs-placement="top" title="Follow us on YouTube">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                            <a href="https://www.linkedin.com/company/teleperformance" target="_blank" rel="noopener noreferrer" class="social-icon linkedin" data-bs-toggle="tooltip" data-bs-placement="top" title="Follow us on LinkedIn">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="https://twitter.com/teleperformance" target="_blank" rel="noopener noreferrer" class="social-icon twitter" data-bs-toggle="tooltip" data-bs-placement="top" title="Follow us on Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
 
                 <!-- Step 2: Referral Link -->
                 <div id="step2" style="display:none;">
-                    <button id="back-btn" class="btn btn-outline-secondary mb-3">
+                    <button id="back-btn" class="btn btn-outline-secondary mb-3" aria-label="Go back to previous step">
                         <i class="fas fa-arrow-left me-2"></i> <span data-translate="backText">Back</span>
                     </button>
 
@@ -81,24 +87,27 @@
                     
                     <div class="input-group mb-3">
                         <input type="text" id="referral-link" class="form-control" readonly>
-                        <button id="copy-btn" class="btn btn-secondary" type="button" data-translate="copyText">Copy</button>
+                        <button id="copy-btn" class="btn btn-secondary" type="button" data-translate="copyText" aria-label="Copy referral link">Copy</button>
                     </div>
 
                     <!-- QR Code -->
                     <div class="text-center my-4">
-                        <img id="qr-code" src="" alt="QR Code" class="qr-code">
+                        <img id="qr-code" src="" alt="QR Code" class="qr-code d-none">
+                        <div id="qr-loading" class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading QR code...</span>
+                        </div>
                         <p class="mt-2" data-translate="scanText">Or scan this QR code to apply</p>
                     </div>
 
                     <!-- Share Buttons -->
                     <div class="d-flex justify-content-center gap-2 mb-4">
-                        <button id="share-whatsapp" class="btn btn-success">
+                        <button id="share-whatsapp" class="btn btn-success" aria-label="Share via WhatsApp">
                             <i class="fab fa-whatsapp me-2"></i> <span data-translate="whatsappText">WhatsApp</span>
                         </button>
-                        <button id="share-line" class="btn btn-success" style="background-color: #00B900;">
+                        <button id="share-line" class="btn btn-success" style="background-color: #00B900;" aria-label="Share via Line">
                             <i class="fab fa-line me-2"></i> <span data-translate="lineText">Line</span>
                         </button>
-                        <button id="share-facebook" class="btn btn-primary">
+                        <button id="share-facebook" class="btn btn-primary" aria-label="Share via Facebook">
                             <i class="fab fa-facebook-f me-2"></i> <span data-translate="facebookText">Facebook</span>
                         </button>
                     </div>
@@ -107,8 +116,12 @@
                     <div class="mt-4 text-center">
                         <h5 data-translate="locationSocial">Location Social Media:</h5>
                         <div class="d-flex justify-content-center gap-3 mt-2">
-                            <a href="#" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="social-icon facebook" data-bs-toggle="tooltip" data-bs-placement="top" title="Follow us on Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="social-icon instagram" data-bs-toggle="tooltip" data-bs-placement="top" title="Follow us on Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
                         </div>
                     </div>
                 </div>

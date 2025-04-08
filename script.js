@@ -188,8 +188,10 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 jsonData = data;
-                populateDropdown(elements.jobLangSelect, getUniqueValues('Language'));
-                populateDropdown(elements.locationSelect, getUniqueValues('Location'));
+                // Initialize dropdowns with empty options
+                populateDropdown(elements.jobLangSelect, []);
+                populateDropdown(elements.locationSelect, []);
+                populateDropdown(elements.jobSelect, []);
             })
             .catch(error => {
                 console.error('Error loading data:', error);
@@ -200,6 +202,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get unique values from a specific field
     function getUniqueValues(field) {
         return [...new Set(jsonData.map(item => item[field]))];
+    }
+
+    // Get locations that have jobs for the selected language
+    function getLocationsForLanguage(language) {
+        if (!language || !jsonData.length) return [];
+        
+        return [...new Set(
+            jsonData
+                .filter(item => item.Language.toLowerCase() === language.toLowerCase())
+                .map(item => item.Location)
+        )].filter(Boolean);
+    }
+
+    // Get languages available for a specific location
+    function getLanguagesForLocation(location) {
+        if (!location || !jsonData.length) return [];
+        
+        return [...new Set(
+            jsonData
+                .filter(item => item.Location === location)
+                .map(item => item.Language)
+        )].filter(Boolean);
     }
 
     // Populate dropdown with options
@@ -246,9 +270,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (translation[key]) el.placeholder = translation[key];
         });
         
-        // Update dropdown default options
-        populateDropdown(elements.jobLangSelect, getUniqueValues('Language'));
-        populateDropdown(elements.locationSelect, getUniqueValues('Location'));
+        // Get available locations for the selected language
+        const availableLocations = getLocationsForLanguage(language);
+        populateDropdown(elements.locationSelect, availableLocations);
+        
+        // Reset job language and position dropdowns
+        populateDropdown(elements.jobLangSelect, []);
+        populateDropdown(elements.jobSelect, []);
         
         // Update social media links based on location
         updateSocialLinks();
@@ -348,11 +376,18 @@ document.addEventListener('DOMContentLoaded', function() {
             updatePageContent(this.value);
         });
         
-        // Job language change
-        elements.jobLangSelect.addEventListener('change', updateJobsDropdown);
+        // Location change - update job languages available for this location
+        elements.locationSelect.addEventListener('change', function() {
+            const location = this.value;
+            if (!location) return;
+            
+            const availableLanguages = getLanguagesForLocation(location);
+            populateDropdown(elements.jobLangSelect, availableLanguages);
+            populateDropdown(elements.jobSelect, []); // Reset job positions
+        });
         
-        // Location change
-        elements.locationSelect.addEventListener('change', updateJobsDropdown);
+        // Job language change - update positions
+        elements.jobLangSelect.addEventListener('change', updateJobsDropdown);
         
         // Next button
         elements.nextBtn.addEventListener('click', function() {

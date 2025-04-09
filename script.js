@@ -188,7 +188,8 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 jsonData = data;
-                updateLocationsDropdown('english');
+                // Initialize dropdowns after data is loaded
+                updatePageContent('english');
             })
             .catch(error => {
                 console.error('Error loading data:', error);
@@ -196,38 +197,41 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Get locations for specific language
-    function getLocationsForLanguage(language) {
+    // Get unique locations for selected language
+    function getLocationsForLanguage(lang) {
         if (!jsonData.length) return [];
+        const langLower = lang.toLowerCase();
         return [...new Set(
             jsonData
-                .filter(item => item.Language.toLowerCase() === language.toLowerCase())
+                .filter(item => item.Language.toLowerCase() === langLower)
                 .map(item => item.Location)
-        ].filter(Boolean);
+        )].filter(Boolean);
     }
 
-    // Get languages for specific location
-    function getLanguagesForLocation(location) {
+    // Get unique languages for selected location
+    function getLanguagesForLocation(loc) {
         if (!jsonData.length) return [];
         return [...new Set(
             jsonData
-                .filter(item => item.Location === location)
+                .filter(item => item.Location === loc)
                 .map(item => item.Language)
-        ].filter(Boolean);
+        )].filter(Boolean);
     }
 
-    // Update locations dropdown based on page language
-    function updateLocationsDropdown(language) {
-        const locations = getLocationsForLanguage(language);
-        populateDropdown(elements.locationSelect, locations);
-        populateDropdown(elements.jobLangSelect, []);
-        populateDropdown(elements.jobSelect, []);
+    // Get unique jobs for selected location and language
+    function getJobsForLocationAndLanguage(loc, lang) {
+        if (!jsonData.length) return [];
+        return [...new Set(
+            jsonData
+                .filter(item => item.Location === loc && item.Language === lang)
+                .map(item => item.Positions)
+        )].filter(Boolean);
     }
 
     // Populate dropdown with options
     function populateDropdown(dropdown, options) {
         dropdown.innerHTML = '';
-        const defaultOption = new Option('-- ' + (translations[elements.pageLangSelect.value]?.selectText || 'Select') + ' --', '');
+        const defaultOption = new Option('-- Select --', '');
         defaultOption.disabled = true;
         defaultOption.selected = true;
         dropdown.appendChild(defaultOption);
@@ -237,47 +241,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Update jobs dropdown based on selections
-    function updateJobsDropdown() {
-        const language = elements.jobLangSelect.value;
-        const location = elements.locationSelect.value;
-        
-        if (language && location) {
-            const jobs = jsonData
-                .filter(item => item.Language === language && item.Location === location)
-                .map(item => item.Positions);
-            populateDropdown(elements.jobSelect, [...new Set(jobs)]);
-        } else {
-            populateDropdown(elements.jobSelect, []);
-        }
-    }
-
     // Update page content based on selected language
     function updatePageContent(language) {
         const translation = translations[language] || translations.english;
         
+        // Update all text translations
         document.querySelectorAll('[data-translate]').forEach(el => {
             const key = el.getAttribute('data-translate');
             if (translation[key]) el.textContent = translation[key];
         });
         
+        // Update placeholders
         document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
             const key = el.getAttribute('data-translate-placeholder');
             if (translation[key]) el.placeholder = translation[key];
         });
         
-        updateLocationsDropdown(language);
-        updateSocialLinks();
+        // Update locations dropdown
+        const locations = getLocationsForLanguage(language);
+        populateDropdown(elements.locationSelect, locations);
+        
+        // Reset dependent dropdowns
+        populateDropdown(elements.jobLangSelect, []);
+        populateDropdown(elements.jobSelect, []);
     }
 
-    // Update social media links based on location
+    // [Rest of the functions remain the same...]
     function updateSocialLinks() {
         const links = locationSocialLinks[currentLocation] || locationSocialLinks.default;
         elements.socialLinks.facebook.href = links.facebook;
         elements.socialLinks.instagram.href = links.instagram;
     }
 
-    // Generate and display referral link
     function generateReferralLink() {
         const bmsId = elements.bmsId.value.trim();
         if (!bmsId) {
@@ -313,55 +308,49 @@ document.addEventListener('DOMContentLoaded', function() {
         return false;
     }
 
-    // Generate QR code
     function generateQrCode(url) {
         elements.qrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&format=png&color=000&bgcolor=FFF&data=${encodeURIComponent(url)}`;
     }
 
-    // Copy link to clipboard
     function copyToClipboard() {
         elements.referralLink.select();
         document.execCommand('copy');
-        
         const originalText = elements.copyBtn.innerHTML;
         elements.copyBtn.innerHTML = `<i class="fas fa-check"></i> ${translations[elements.pageLangSelect.value]?.copiedText || 'Copied!'}`;
-        
         setTimeout(() => {
             elements.copyBtn.innerHTML = originalText;
         }, 2000);
     }
 
-    // Share via WhatsApp
     function shareWhatsApp() {
         const message = `${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${elements.referralLink.value}`;
         const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
         window.open(url, '_blank');
     }
 
-    // Share via Line
     function shareLine() {
         const message = `${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${elements.referralLink.value}`;
         const url = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(message)}`;
         window.open(url, '_blank');
     }
 
-    // Share via Facebook
     function shareFacebook() {
         const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(elements.referralLink.value)}`;
         window.open(url, '_blank');
     }
 
-    // Show alert message
     function showAlert(message) {
         alert(message);
     }
 
     // Setup event listeners
     function setupEventListeners() {
+        // When page language changes
         elements.pageLangSelect.addEventListener('change', function() {
             updatePageContent(this.value);
         });
         
+        // When location changes
         elements.locationSelect.addEventListener('change', function() {
             const location = this.value;
             if (!location) return;
@@ -371,8 +360,20 @@ document.addEventListener('DOMContentLoaded', function() {
             populateDropdown(elements.jobSelect, []);
         });
         
-        elements.jobLangSelect.addEventListener('change', updateJobsDropdown);
+        // When job language changes
+        elements.jobLangSelect.addEventListener('change', function() {
+            const language = this.value;
+            const location = elements.locationSelect.value;
+            
+            if (language && location) {
+                const jobs = getJobsForLocationAndLanguage(location, language);
+                populateDropdown(elements.jobSelect, jobs);
+            } else {
+                populateDropdown(elements.jobSelect, []);
+            }
+        });
         
+        // Next button
         elements.nextBtn.addEventListener('click', function() {
             if (generateReferralLink()) {
                 elements.step1.style.display = 'none';
@@ -381,12 +382,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
+        // Back button
         elements.backBtn.addEventListener('click', function() {
             elements.step2.style.display = 'none';
             elements.step1.style.display = 'block';
         });
         
+        // Copy button
         elements.copyBtn.addEventListener('click', copyToClipboard);
+        
+        // Share buttons
         elements.shareWhatsapp.addEventListener('click', shareWhatsApp);
         elements.shareLine.addEventListener('click', shareLine);
         elements.shareFacebook.addEventListener('click', shareFacebook);

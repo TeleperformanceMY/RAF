@@ -188,10 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 jsonData = data;
-                // Initialize dropdowns with empty options
-                populateDropdown(elements.jobLangSelect, []);
-                populateDropdown(elements.locationSelect, []);
-                populateDropdown(elements.jobSelect, []);
+                updateLocationsDropdown('english');
             })
             .catch(error => {
                 console.error('Error loading data:', error);
@@ -199,31 +196,32 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Get unique values from a specific field
-    function getUniqueValues(field) {
-        return [...new Set(jsonData.map(item => item[field]))];
-    }
-
-    // Get locations that have jobs for the selected language
+    // Get locations for specific language
     function getLocationsForLanguage(language) {
-        if (!language || !jsonData.length) return [];
-        
+        if (!jsonData.length) return [];
         return [...new Set(
             jsonData
                 .filter(item => item.Language.toLowerCase() === language.toLowerCase())
                 .map(item => item.Location)
-        )].filter(Boolean);
+        ].filter(Boolean);
     }
 
-    // Get languages available for a specific location
+    // Get languages for specific location
     function getLanguagesForLocation(location) {
-        if (!location || !jsonData.length) return [];
-        
+        if (!jsonData.length) return [];
         return [...new Set(
             jsonData
                 .filter(item => item.Location === location)
                 .map(item => item.Language)
-        )].filter(Boolean);
+        ].filter(Boolean);
+    }
+
+    // Update locations dropdown based on page language
+    function updateLocationsDropdown(language) {
+        const locations = getLocationsForLanguage(language);
+        populateDropdown(elements.locationSelect, locations);
+        populateDropdown(elements.jobLangSelect, []);
+        populateDropdown(elements.jobSelect, []);
     }
 
     // Populate dropdown with options
@@ -250,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .map(item => item.Positions);
             populateDropdown(elements.jobSelect, [...new Set(jobs)]);
         } else {
-            elements.jobSelect.innerHTML = '';
+            populateDropdown(elements.jobSelect, []);
         }
     }
 
@@ -258,27 +256,17 @@ document.addEventListener('DOMContentLoaded', function() {
     function updatePageContent(language) {
         const translation = translations[language] || translations.english;
         
-        // Update all elements with data-translate attribute
         document.querySelectorAll('[data-translate]').forEach(el => {
             const key = el.getAttribute('data-translate');
             if (translation[key]) el.textContent = translation[key];
         });
         
-        // Update placeholders
         document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
             const key = el.getAttribute('data-translate-placeholder');
             if (translation[key]) el.placeholder = translation[key];
         });
         
-        // Get available locations for the selected language
-        const availableLocations = getLocationsForLanguage(language);
-        populateDropdown(elements.locationSelect, availableLocations);
-        
-        // Reset job language and position dropdowns
-        populateDropdown(elements.jobLangSelect, []);
-        populateDropdown(elements.jobSelect, []);
-        
-        // Update social media links based on location
+        updateLocationsDropdown(language);
         updateSocialLinks();
     }
 
@@ -335,7 +323,6 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.referralLink.select();
         document.execCommand('copy');
         
-        // Show feedback
         const originalText = elements.copyBtn.innerHTML;
         elements.copyBtn.innerHTML = `<i class="fas fa-check"></i> ${translations[elements.pageLangSelect.value]?.copiedText || 'Copied!'}`;
         
@@ -371,25 +358,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Setup event listeners
     function setupEventListeners() {
-        // Page language change
         elements.pageLangSelect.addEventListener('change', function() {
             updatePageContent(this.value);
         });
         
-        // Location change - update job languages available for this location
         elements.locationSelect.addEventListener('change', function() {
             const location = this.value;
             if (!location) return;
             
-            const availableLanguages = getLanguagesForLocation(location);
-            populateDropdown(elements.jobLangSelect, availableLanguages);
-            populateDropdown(elements.jobSelect, []); // Reset job positions
+            const languages = getLanguagesForLocation(location);
+            populateDropdown(elements.jobLangSelect, languages);
+            populateDropdown(elements.jobSelect, []);
         });
         
-        // Job language change - update positions
         elements.jobLangSelect.addEventListener('change', updateJobsDropdown);
         
-        // Next button
         elements.nextBtn.addEventListener('click', function() {
             if (generateReferralLink()) {
                 elements.step1.style.display = 'none';
@@ -398,16 +381,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Back button
         elements.backBtn.addEventListener('click', function() {
             elements.step2.style.display = 'none';
             elements.step1.style.display = 'block';
         });
         
-        // Copy button
         elements.copyBtn.addEventListener('click', copyToClipboard);
-        
-        // Share buttons
         elements.shareWhatsapp.addEventListener('click', shareWhatsApp);
         elements.shareLine.addEventListener('click', shareLine);
         elements.shareFacebook.addEventListener('click', shareFacebook);

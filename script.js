@@ -156,19 +156,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Location-specific social media links
-    const locationSocialLinks = {
+  // Social media links
+    const socialLinks = {
+        global: {
+            linkedin: "https://www.linkedin.com/company/teleperformance/"
+        },
         malaysia: {
-            facebook: "https://www.facebook.com/teleperformance.malaysia",
-            instagram: "https://www.instagram.com/teleperformance_malaysia"
+            facebook: "http://www.facebook.com/TPinMalaysia/",
+            instagram: "http://www.instagram.com/tp_malaysia/"
         },
         thailand: {
-            facebook: "https://www.facebook.com/TeleperformanceTH",
-            instagram: "https://www.instagram.com/teleperformance_thailand"
-        },
-        default: {
-            facebook: "https://www.facebook.com/Teleperformance",
-            instagram: "https://www.instagram.com/teleperformance"
+            facebook: "http://www.facebook.com/TPinThailand/",
+            instagram: "http://www.instagram.com/tpinthailand/"
         }
     };
 
@@ -188,7 +187,6 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 jsonData = data;
-                // Initialize dropdowns after data is loaded
                 updatePageContent('english');
             })
             .catch(error => {
@@ -197,33 +195,37 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Get unique locations for selected language
-    function getLocationsForLanguage(lang) {
+    // Get unique values from a specific field
+    function getUniqueValues(field) {
+        return [...new Set(jsonData.map(item => item[field]))].filter(Boolean);
+    }
+
+    // Get locations for specific language
+    function getLocationsForLanguage(language) {
         if (!jsonData.length) return [];
-        const langLower = lang.toLowerCase();
         return [...new Set(
             jsonData
-                .filter(item => item.Language.toLowerCase() === langLower)
+                .filter(item => item.Language.toLowerCase() === language.toLowerCase())
                 .map(item => item.Location)
         )].filter(Boolean);
     }
 
-    // Get unique languages for selected location
-    function getLanguagesForLocation(loc) {
+    // Get languages for specific location
+    function getLanguagesForLocation(location) {
         if (!jsonData.length) return [];
         return [...new Set(
             jsonData
-                .filter(item => item.Location === loc)
+                .filter(item => item.Location === location)
                 .map(item => item.Language)
         )].filter(Boolean);
     }
 
-    // Get unique jobs for selected location and language
-    function getJobsForLocationAndLanguage(loc, lang) {
+    // Get jobs for specific location and language
+    function getJobsForLocationAndLanguage(location, language) {
         if (!jsonData.length) return [];
         return [...new Set(
             jsonData
-                .filter(item => item.Location === loc && item.Language === lang)
+                .filter(item => item.Location === location && item.Language === language)
                 .map(item => item.Positions)
         )].filter(Boolean);
     }
@@ -245,34 +247,40 @@ document.addEventListener('DOMContentLoaded', function() {
     function updatePageContent(language) {
         const translation = translations[language] || translations.english;
         
-        // Update all text translations
+        // Update translations
         document.querySelectorAll('[data-translate]').forEach(el => {
             const key = el.getAttribute('data-translate');
             if (translation[key]) el.textContent = translation[key];
         });
         
-        // Update placeholders
         document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
             const key = el.getAttribute('data-translate-placeholder');
             if (translation[key]) el.placeholder = translation[key];
         });
         
-        // Update locations dropdown
-        const locations = getLocationsForLanguage(language);
-        populateDropdown(elements.locationSelect, locations);
-        
-        // Reset dependent dropdowns
-        populateDropdown(elements.jobLangSelect, []);
+        // Initialize dropdowns
+        populateDropdown(elements.jobLangSelect, getUniqueValues('Language'));
+        populateDropdown(elements.locationSelect, getUniqueValues('Location'));
         populateDropdown(elements.jobSelect, []);
+        
+        updateSocialLinks();
     }
 
-    // [Rest of the functions remain the same...]
+    // Update social media links
     function updateSocialLinks() {
-        const links = locationSocialLinks[currentLocation] || locationSocialLinks.default;
-        elements.socialLinks.facebook.href = links.facebook;
-        elements.socialLinks.instagram.href = links.instagram;
+        // Global links
+        elements.socialLinks.linkedin.href = socialLinks.global.linkedin;
+        
+        // Malaysia links
+        elements.socialLinks.facebookMalaysia.href = socialLinks.malaysia.facebook;
+        elements.socialLinks.instagramMalaysia.href = socialLinks.malaysia.instagram;
+        
+        // Thailand links
+        elements.socialLinks.facebookThailand.href = socialLinks.thailand.facebook;
+        elements.socialLinks.instagramThailand.href = socialLinks.thailand.instagram;
     }
 
+    // Generate and display referral link
     function generateReferralLink() {
         const bmsId = elements.bmsId.value.trim();
         if (!bmsId) {
@@ -300,7 +308,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const referralLink = `${jobData['Evergreen link']}${bmsId}`;
             elements.referralLink.value = referralLink;
             generateQrCode(referralLink);
-            updateSocialLinks();
             return true;
         }
         
@@ -308,10 +315,12 @@ document.addEventListener('DOMContentLoaded', function() {
         return false;
     }
 
+    // Generate QR code
     function generateQrCode(url) {
         elements.qrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&format=png&color=000&bgcolor=FFF&data=${encodeURIComponent(url)}`;
     }
 
+    // Copy link to clipboard
     function copyToClipboard() {
         elements.referralLink.select();
         document.execCommand('copy');
@@ -322,23 +331,36 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 2000);
     }
 
+    // Share via WhatsApp
     function shareWhatsApp() {
-        const message = `${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${elements.referralLink.value}`;
+        const prompt = translations[elements.pageLangSelect.value]?.sharePrompt || 'Share this opportunity with your friends:';
+        const message = `${prompt}\n\n${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${elements.referralLink.value}`;
         const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
         window.open(url, '_blank');
     }
 
+    // Share via Line
     function shareLine() {
-        const message = `${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${elements.referralLink.value}`;
+        const prompt = translations[elements.pageLangSelect.value]?.sharePrompt || 'Share this opportunity with your friends:';
+        const message = `${prompt}\n\n${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${elements.referralLink.value}`;
         const url = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(message)}`;
         window.open(url, '_blank');
     }
 
+    // Share via Facebook
     function shareFacebook() {
         const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(elements.referralLink.value)}`;
         window.open(url, '_blank');
     }
 
+    // Share via WeChat
+    function shareWechat() {
+        // WeChat sharing requires QR code scanning
+        const shareText = `${translations[elements.pageLangSelect.value]?.sharePrompt || 'Share this opportunity with your friends:'}\n\n${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'}`;
+        alert(`${shareText}\n\nScan the QR code to share via WeChat`);
+    }
+
+    // Show alert message
     function showAlert(message) {
         alert(message);
     }
@@ -348,6 +370,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // When page language changes
         elements.pageLangSelect.addEventListener('change', function() {
             updatePageContent(this.value);
+        });
+        
+        // When job language changes
+        elements.jobLangSelect.addEventListener('change', function() {
+            const language = this.value;
+            if (!language) return;
+            
+            const locations = getLocationsForLanguage(language);
+            populateDropdown(elements.locationSelect, locations);
+            populateDropdown(elements.jobSelect, []);
         });
         
         // When location changes
@@ -360,18 +392,9 @@ document.addEventListener('DOMContentLoaded', function() {
             populateDropdown(elements.jobSelect, []);
         });
         
-        // When job language changes
-        elements.jobLangSelect.addEventListener('change', function() {
-            const language = this.value;
-            const location = elements.locationSelect.value;
-            
-            if (language && location) {
-                const jobs = getJobsForLocationAndLanguage(location, language);
-                populateDropdown(elements.jobSelect, jobs);
-            } else {
-                populateDropdown(elements.jobSelect, []);
-            }
-        });
+        // When either job language or location changes
+        elements.jobLangSelect.addEventListener('change', updateJobs);
+        elements.locationSelect.addEventListener('change', updateJobs);
         
         // Next button
         elements.nextBtn.addEventListener('click', function() {
@@ -395,6 +418,20 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.shareWhatsapp.addEventListener('click', shareWhatsApp);
         elements.shareLine.addEventListener('click', shareLine);
         elements.shareFacebook.addEventListener('click', shareFacebook);
+        elements.shareWechat.addEventListener('click', shareWechat);
+    }
+
+    // Update jobs dropdown based on current selections
+    function updateJobs() {
+        const language = elements.jobLangSelect.value;
+        const location = elements.locationSelect.value;
+        
+        if (language && location) {
+            const jobs = getJobsForLocationAndLanguage(location, language);
+            populateDropdown(elements.jobSelect, jobs);
+        } else {
+            populateDropdown(elements.jobSelect, []);
+        }
     }
 
     // Initialize the app

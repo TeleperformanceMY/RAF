@@ -52,8 +52,13 @@ document.addEventListener('DOMContentLoaded', function() {
             whatsappText: "WhatsApp",
             lineText: "Line",
             facebookText: "Facebook",
+            wechatText: "WeChat",
             locationSocial: "Location Social Media:",
-            shareMessage: "Check out this job opportunity at Teleperformance: "
+            shareMessage: "Check out this job opportunity at Teleperformance: ",
+            sharePrompt: "Share this opportunity with your friends:",
+            tpGlobal: "TP Global",
+            tpMalaysia: "TP Malaysia",
+            tpThailand: "TP Thailand"
         },
         japanese: {
             pageLangLabel: "言語を選択してください:",
@@ -73,8 +78,13 @@ document.addEventListener('DOMContentLoaded', function() {
             whatsappText: "WhatsApp",
             lineText: "Line",
             facebookText: "Facebook",
+            wechatText: "WeChat",
             locationSocial: "現地のソーシャルメディア:",
-            shareMessage: "Teleperformanceのこの求人情報をチェックしてください: "
+            shareMessage: "Teleperformanceのこの求人情報をチェックしてください: ",
+            sharePrompt: "この機会を友達と共有しましょう:",
+            tpGlobal: "TP グローバル",
+            tpMalaysia: "TP マレーシア",
+            tpThailand: "TP タイ"
         },
         korean: {
             pageLangLabel: "언어 선택:",
@@ -94,8 +104,13 @@ document.addEventListener('DOMContentLoaded', function() {
             whatsappText: "WhatsApp",
             lineText: "Line",
             facebookText: "Facebook",
+            wechatText: "WeChat",
             locationSocial: "현지 소셜 미디어:",
-            shareMessage: "Teleperformance의 이 채용 기회를 확인하세요: "
+            shareMessage: "Teleperformance의 이 채용 기회를 확인하세요: ",
+            sharePrompt: "이 기회를 친구들과 공유하세요:",
+            tpGlobal: "TP 글로벌",
+            tpMalaysia: "TP 말레이시아",
+            tpThailand: "TP 태국"
         },
         malay: {
             pageLangLabel: "Pilih Bahasa Anda:",
@@ -115,8 +130,13 @@ document.addEventListener('DOMContentLoaded', function() {
             whatsappText: "WhatsApp",
             lineText: "Line",
             facebookText: "Facebook",
+            wechatText: "WeChat",
             locationSocial: "Media Sosial Lokasi:",
-            shareMessage: "Lihat peluang pekerjaan ini di Teleperformance: "
+            shareMessage: "Lihat peluang pekerjaan ini di Teleperformance: ",
+            sharePrompt: "Kongsi peluang ini dengan rakan anda:",
+            tpGlobal: "TP Global",
+            tpMalaysia: "TP Malaysia",
+            tpThailand: "TP Thailand"
         },
         mandarin: {
             pageLangLabel: "选择您的语言:",
@@ -136,8 +156,13 @@ document.addEventListener('DOMContentLoaded', function() {
             whatsappText: "WhatsApp",
             lineText: "Line",
             facebookText: "Facebook",
+            wechatText: "WeChat",
             locationSocial: "当地社交媒体:",
-            shareMessage: "查看Teleperformance的这个工作机会: "
+            shareMessage: "查看Teleperformance的这个工作机会: ",
+            sharePrompt: "与朋友分享这个机会:",
+            tpGlobal: "TP 全球",
+            tpMalaysia: "TP 马来西亚",
+            tpThailand: "TP 泰国"
         },
         thai: {
             pageLangLabel: "เลือกภาษาของคุณ:",
@@ -157,12 +182,17 @@ document.addEventListener('DOMContentLoaded', function() {
             whatsappText: "WhatsApp",
             lineText: "Line",
             facebookText: "Facebook",
+            wechatText: "WeChat",
             locationSocial: "สื่อสังคมท้องถิ่น:",
-            shareMessage: "ดูโอกาสงานนี้ที่ Teleperformance: "
+            shareMessage: "ดูโอกาสงานนี้ที่ Teleperformance: ",
+            sharePrompt: "แบ่งปันโอกาสนี้กับเพื่อนของคุณ:",
+            tpGlobal: "TP ระดับโลก",
+            tpMalaysia: "TP มาเลเซีย",
+            tpThailand: "TP ประเทศไทย"
         }
     };
 
-  // Social media links
+    // Social media links
     const socialLinks = {
         global: {
             linkedin: "https://www.linkedin.com/company/teleperformance/"
@@ -177,7 +207,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-  
     // Initialize the application
     function init() {
         loadData();
@@ -188,12 +217,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load JSON data
     function loadData() {
         fetch('data.json')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
             .then(data => {
                 jsonData = data;
                 initializeDropdowns();
             })
-            .catch(error => console.error('Error loading data:', error));
+            .catch(error => {
+                console.error('Error loading data:', error);
+                showAlert('Failed to load job data. Please try again later.');
+            });
     }
 
     // Initialize dropdowns with all options
@@ -203,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
         populateDropdown(elements.jobSelect, []);
     }
 
-  // Get unique values from a specific field
+    // Get unique values from a specific field
     function getUniqueValues(field) {
         return [...new Set(jsonData.map(item => item[field]))].filter(Boolean);
     }
@@ -238,12 +273,12 @@ document.addEventListener('DOMContentLoaded', function() {
         )].filter(Boolean);
     }
 
-  // Populate dropdown with options
+    // Populate dropdown with options
     function populateDropdown(dropdown, options, preserveSelection = false) {
         const currentValue = dropdown.value;
         dropdown.innerHTML = '';
         
-        const defaultOption = new Option('-- Select --', '');
+        const defaultOption = new Option('-- ' + (translations[elements.pageLangSelect.value]?.selectText || 'Select') + ' --', '');
         defaultOption.disabled = true;
         defaultOption.selected = !currentValue;
         dropdown.appendChild(defaultOption);
@@ -261,25 +296,17 @@ document.addEventListener('DOMContentLoaded', function() {
     function updatePageContent(language) {
         const translation = translations[language] || translations.english;
         
-        // Update translations
+        // Update all elements with data-translate attribute
         document.querySelectorAll('[data-translate]').forEach(el => {
             const key = el.getAttribute('data-translate');
             if (translation[key]) el.textContent = translation[key];
         });
         
+        // Update placeholders
         document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
             const key = el.getAttribute('data-translate-placeholder');
             if (translation[key]) el.placeholder = translation[key];
         });
-        
-        updateSocialLinks();
-    }
-
-        
-        // Initialize dropdowns
-        populateDropdown(elements.jobLangSelect, getUniqueValues('Language'));
-        populateDropdown(elements.locationSelect, getUniqueValues('Location'));
-        populateDropdown(elements.jobSelect, []);
         
         updateSocialLinks();
     }
@@ -298,99 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.socialLinks.instagramThailand.href = socialLinks.thailand.instagram;
     }
 
-    // Generate and display referral link
-    function generateReferralLink() {
-        const bmsId = elements.bmsId.value.trim();
-        if (!bmsId) {
-            showAlert(translations[elements.pageLangSelect.value]?.bmsIdLabel || 'Please enter your BMS ID');
-            return false;
-        }
-        
-        const job = elements.jobSelect.value;
-        if (!job) {
-            showAlert(translations[elements.pageLangSelect.value]?.selectJobText || 'Please select a job position');
-            return false;
-        }
-        
-        const language = elements.jobLangSelect.value;
-        const location = elements.locationSelect.value;
-        currentLocation = location.toLowerCase();
-        
-        const jobData = jsonData.find(
-            item => item.Language === language && 
-                   item.Location === location && 
-                   item.Positions === job
-        );
-        
-        if (jobData) {
-            const referralLink = `${jobData['Evergreen link']}${bmsId}`;
-            elements.referralLink.value = referralLink;
-            generateQrCode(referralLink);
-            return true;
-        }
-        
-        showAlert(translations[elements.pageLangSelect.value]?.jobDataError || 'Error generating referral link');
-        return false;
-    }
-
-    // Generate QR code
-    function generateQrCode(url) {
-        elements.qrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&format=png&color=000&bgcolor=FFF&data=${encodeURIComponent(url)}`;
-    }
-
-    // Copy link to clipboard
-    function copyToClipboard() {
-        elements.referralLink.select();
-        document.execCommand('copy');
-        const originalText = elements.copyBtn.innerHTML;
-        elements.copyBtn.innerHTML = `<i class="fas fa-check"></i> ${translations[elements.pageLangSelect.value]?.copiedText || 'Copied!'}`;
-        setTimeout(() => {
-            elements.copyBtn.innerHTML = originalText;
-        }, 2000);
-    }
-
-    // Share via WhatsApp
-    function shareWhatsApp() {
-        const prompt = translations[elements.pageLangSelect.value]?.sharePrompt || 'Share this opportunity with your friends:';
-        const message = `${prompt}\n\n${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${elements.referralLink.value}`;
-        const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
-        window.open(url, '_blank');
-    }
-
-    // Share via Line
-    function shareLine() {
-        const prompt = translations[elements.pageLangSelect.value]?.sharePrompt || 'Share this opportunity with your friends:';
-        const message = `${prompt}\n\n${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${elements.referralLink.value}`;
-        const url = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(message)}`;
-        window.open(url, '_blank');
-    }
-
-    // Share via Facebook
-    function shareFacebook() {
-        const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(elements.referralLink.value)}`;
-        window.open(url, '_blank');
-    }
-
-    // Share via WeChat
-    function shareWechat() {
-        // WeChat sharing requires QR code scanning
-        const shareText = `${translations[elements.pageLangSelect.value]?.sharePrompt || 'Share this opportunity with your friends:'}\n\n${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'}`;
-        alert(`${shareText}\n\nScan the QR code to share via WeChat`);
-    }
-
-    // Show alert message
-    function showAlert(message) {
-        alert(message);
-    }
-
-    // Setup event listeners
-    function setupEventListeners() {
-        // When page language changes
-        elements.pageLangSelect.addEventListener('change', function() {
-            updatePageContent(this.value);
-        });
-
-         // Update jobs dropdown based on current selections
+    // Update jobs dropdown based on current selections
     function updateJobsDropdown() {
         const language = elements.jobLangSelect.value;
         const location = elements.locationSelect.value;
@@ -439,10 +374,106 @@ document.addEventListener('DOMContentLoaded', function() {
         updateJobsDropdown();
     }
 
-       
-        // When either job language or location changes
-        elements.jobLangSelect.addEventListener('change', updateJobs);
-        elements.locationSelect.addEventListener('change', updateJobs);
+    // Generate and display referral link
+    function generateReferralLink() {
+        const bmsId = elements.bmsId.value.trim();
+        if (!bmsId) {
+            showAlert(translations[elements.pageLangSelect.value]?.bmsIdLabel || 'Please enter your BMS ID');
+            return false;
+        }
+        
+        const job = elements.jobSelect.value;
+        if (!job) {
+            showAlert(translations[elements.pageLangSelect.value]?.selectJobText || 'Please select a job position');
+            return false;
+        }
+        
+        const language = elements.jobLangSelect.value;
+        const location = elements.locationSelect.value;
+        currentLocation = location.toLowerCase();
+        
+        const jobData = jsonData.find(
+            item => item.Language === language && 
+                   item.Location === location && 
+                   item.Positions === job
+        );
+        
+        if (jobData) {
+            const referralLink = `${jobData['Evergreen link']}${bmsId}`;
+            elements.referralLink.value = referralLink;
+            generateQrCode(referralLink);
+            return true;
+        }
+        
+        showAlert(translations[elements.pageLangSelect.value]?.jobDataError || 'Error generating referral link');
+        return false;
+    }
+
+    // Generate QR code
+    function generateQrCode(url) {
+        elements.qrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&format=png&color=000&bgcolor=FFF&data=${encodeURIComponent(url)}`;
+    }
+
+    // Copy link to clipboard
+    function copyToClipboard() {
+        elements.referralLink.select();
+        document.execCommand('copy');
+        
+        // Show feedback
+        const originalText = elements.copyBtn.innerHTML;
+        elements.copyBtn.innerHTML = `<i class="fas fa-check"></i> ${translations[elements.pageLangSelect.value]?.copiedText || 'Copied!'}`;
+        
+        setTimeout(() => {
+            elements.copyBtn.innerHTML = originalText;
+        }, 2000);
+    }
+
+    // Share via WhatsApp
+    function shareWhatsApp() {
+        const prompt = translations[elements.pageLangSelect.value]?.sharePrompt || 'Share this opportunity with your friends:';
+        const message = `${prompt}\n\n${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${elements.referralLink.value}`;
+        const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
+    }
+
+    // Share via Line
+    function shareLine() {
+        const prompt = translations[elements.pageLangSelect.value]?.sharePrompt || 'Share this opportunity with your friends:';
+        const message = `${prompt}\n\n${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${elements.referralLink.value}`;
+        const url = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
+    }
+
+    // Share via Facebook
+    function shareFacebook() {
+        const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(elements.referralLink.value)}`;
+        window.open(url, '_blank');
+    }
+
+    // Share via WeChat
+    function shareWechat() {
+        const prompt = translations[elements.pageLangSelect.value]?.sharePrompt || 'Share this opportunity with your friends:';
+        const message = `${prompt}\n\n${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${elements.referralLink.value}`;
+        alert(`${message}\n\nScan the QR code to share via WeChat`);
+    }
+
+    // Show alert message
+    function showAlert(message) {
+        alert(message);
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+        // Page language change
+        elements.pageLangSelect.addEventListener('change', function() {
+            updatePageContent(this.value);
+        });
+        
+        // Job language change
+        elements.jobLangSelect.addEventListener('change', handleJobLangChange);
+        
+        // Location change
+        elements.locationSelect.addEventListener('change', handleLocationChange);
         
         // Next button
         elements.nextBtn.addEventListener('click', function() {
@@ -469,34 +500,6 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.shareWechat.addEventListener('click', shareWechat);
     }
 
-    // Update jobs dropdown based on current selections
-    function updateJobs() {
-        const language = elements.jobLangSelect.value;
-        const location = elements.locationSelect.value;
-        
-        if (language && location) {
-            const jobs = getJobsForLocationAndLanguage(location, language);
-            populateDropdown(elements.jobSelect, jobs);
-        } else {
-            populateDropdown(elements.jobSelect, []);
-        }
-    }
-    // Setup event listeners
-    function setupEventListeners() {
-        // When page language changes
-        elements.pageLangSelect.addEventListener('change', function() {
-            updatePageContent(this.value);
-        });
-        
-        // When job language changes
-        elements.jobLangSelect.addEventListener('change', handleJobLangChange);
-        
-        // When location changes
-        elements.locationSelect.addEventListener('change', handleLocationChange);
-        
-        // [Rest of the event listeners remain the same...]
-        // (nextBtn, backBtn, copyBtn, shareWhatsapp, shareLine, shareFacebook, shareWechat)
-    }
     // Initialize the app
     init();
 });

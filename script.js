@@ -499,32 +499,29 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 2000);
     }
 
-    // Share via WhatsApp
+   // Enhanced share functions that can handle QR code sharing
     function shareWhatsApp() {
         const prompt = translations[elements.pageLangSelect.value]?.sharePrompt || 'Share this opportunity with your friends:';
-        const message = `${prompt}\n\n${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${elements.referralLink.value}`;
+        const message = `${prompt}\n\n${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${currentReferralLink}`;
         const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
         window.open(url, '_blank');
     }
 
-    // Share via Line
     function shareLine() {
         const prompt = translations[elements.pageLangSelect.value]?.sharePrompt || 'Share this opportunity with your friends:';
-        const message = `${prompt}\n\n${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${elements.referralLink.value}`;
+        const message = `${prompt}\n\n${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${currentReferralLink}`;
         const url = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(message)}`;
         window.open(url, '_blank');
     }
 
-    // Share via Facebook
     function shareFacebook() {
-        const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(elements.referralLink.value)}`;
+        const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentReferralLink)}`;
         window.open(url, '_blank');
     }
 
-    // Share via WeChat
     function shareWechat() {
         const prompt = translations[elements.pageLangSelect.value]?.sharePrompt || 'Share this opportunity with your friends:';
-        const message = `${prompt}\n\n${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${elements.referralLink.value}`;
+        const message = `${prompt}\n\n${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${currentReferralLink}`;
         alert(`${message}\n\nScan the QR code to share via WeChat`);
     }
 
@@ -538,6 +535,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Page language change
         elements.pageLangSelect.addEventListener('change', function() {
             updatePageContent(this.value);
+             // Initialize QR code sharing after DOM is ready
+        setTimeout(setupQrCodeSharing, 500);
         });
         
         // Job language change

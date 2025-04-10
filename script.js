@@ -16,15 +16,21 @@ document.addEventListener('DOMContentLoaded', function() {
         shareWhatsapp: document.getElementById('share-whatsapp'),
         shareLine: document.getElementById('share-line'),
         shareFacebook: document.getElementById('share-facebook'),
+        shareWechat: document.getElementById('share-wechat'),
         socialLinks: {
-            facebook: document.querySelector('.social-icon.facebook'),
-            instagram: document.querySelector('.social-icon.instagram')
+            linkedin: document.querySelector('.social-icon.linkedin'),
+            facebookMalaysia: document.querySelector('.social-icon.facebook-malaysia'),
+            instagramMalaysia: document.querySelector('.social-icon.instagram-malaysia'),
+            facebookThailand: document.querySelector('.social-icon.facebook-thailand'),
+            instagramThailand: document.querySelector('.social-icon.instagram-thailand')
         }
     };
 
     // Application Data
     let jsonData = [];
     let currentLocation = '';
+    let lastJobLangSelection = '';
+    let lastLocationSelection = '';
 
     // Complete Translations for all languages
     const translations = {
@@ -171,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+  
     // Initialize the application
     function init() {
         loadData();
@@ -181,21 +188,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load JSON data
     function loadData() {
         fetch('data.json')
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 jsonData = data;
-                updatePageContent('english');
+                initializeDropdowns();
             })
-            .catch(error => {
-                console.error('Error loading data:', error);
-                showAlert('Failed to load job data. Please try again later.');
-            });
+            .catch(error => console.error('Error loading data:', error));
     }
 
-    // Get unique values from a specific field
+    // Initialize dropdowns with all options
+    function initializeDropdowns() {
+        populateDropdown(elements.jobLangSelect, getUniqueValues('Language'));
+        populateDropdown(elements.locationSelect, getUniqueValues('Location'));
+        populateDropdown(elements.jobSelect, []);
+    }
+
+  // Get unique values from a specific field
     function getUniqueValues(field) {
         return [...new Set(jsonData.map(item => item[field]))].filter(Boolean);
     }
@@ -230,16 +238,22 @@ document.addEventListener('DOMContentLoaded', function() {
         )].filter(Boolean);
     }
 
-    // Populate dropdown with options
-    function populateDropdown(dropdown, options) {
+  // Populate dropdown with options
+    function populateDropdown(dropdown, options, preserveSelection = false) {
+        const currentValue = dropdown.value;
         dropdown.innerHTML = '';
+        
         const defaultOption = new Option('-- Select --', '');
         defaultOption.disabled = true;
-        defaultOption.selected = true;
+        defaultOption.selected = !currentValue;
         dropdown.appendChild(defaultOption);
         
         options.forEach(option => {
-            dropdown.appendChild(new Option(option, option));
+            const newOption = new Option(option, option);
+            if (preserveSelection && option === currentValue) {
+                newOption.selected = true;
+            }
+            dropdown.appendChild(newOption);
         });
     }
 
@@ -257,6 +271,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const key = el.getAttribute('data-translate-placeholder');
             if (translation[key]) el.placeholder = translation[key];
         });
+        
+        updateSocialLinks();
+    }
+
         
         // Initialize dropdowns
         populateDropdown(elements.jobLangSelect, getUniqueValues('Language'));
@@ -371,27 +389,57 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.pageLangSelect.addEventListener('change', function() {
             updatePageContent(this.value);
         });
+
+         // Update jobs dropdown based on current selections
+    function updateJobsDropdown() {
+        const language = elements.jobLangSelect.value;
+        const location = elements.locationSelect.value;
         
-        // When job language changes
-        elements.jobLangSelect.addEventListener('change', function() {
-            const language = this.value;
-            if (!language) return;
-            
+        if (language && location) {
+            const jobs = getJobsForLocationAndLanguage(location, language);
+            populateDropdown(elements.jobSelect, jobs, true);
+        } else {
+            populateDropdown(elements.jobSelect, []);
+        }
+    }
+
+    // When job language changes
+    function handleJobLangChange() {
+        const language = elements.jobLangSelect.value;
+        lastJobLangSelection = language;
+        
+        if (language) {
             const locations = getLocationsForLanguage(language);
-            populateDropdown(elements.locationSelect, locations);
-            populateDropdown(elements.jobSelect, []);
-        });
-        
-        // When location changes
-        elements.locationSelect.addEventListener('change', function() {
-            const location = this.value;
-            if (!location) return;
+            populateDropdown(elements.locationSelect, locations, true);
             
-            const languages = getLanguagesForLocation(location);
-            populateDropdown(elements.jobLangSelect, languages);
-            populateDropdown(elements.jobSelect, []);
-        });
+            // Restore location selection if it's valid for this language
+            if (lastLocationSelection && locations.includes(lastLocationSelection)) {
+                elements.locationSelect.value = lastLocationSelection;
+            }
+        }
         
+        updateJobsDropdown();
+    }
+
+    // When location changes
+    function handleLocationChange() {
+        const location = elements.locationSelect.value;
+        lastLocationSelection = location;
+        
+        if (location) {
+            const languages = getLanguagesForLocation(location);
+            populateDropdown(elements.jobLangSelect, languages, true);
+            
+            // Restore language selection if it's valid for this location
+            if (lastJobLangSelection && languages.includes(lastJobLangSelection)) {
+                elements.jobLangSelect.value = lastJobLangSelection;
+            }
+        }
+        
+        updateJobsDropdown();
+    }
+
+       
         // When either job language or location changes
         elements.jobLangSelect.addEventListener('change', updateJobs);
         elements.locationSelect.addEventListener('change', updateJobs);
@@ -433,7 +481,22 @@ document.addEventListener('DOMContentLoaded', function() {
             populateDropdown(elements.jobSelect, []);
         }
     }
-
+    // Setup event listeners
+    function setupEventListeners() {
+        // When page language changes
+        elements.pageLangSelect.addEventListener('change', function() {
+            updatePageContent(this.value);
+        });
+        
+        // When job language changes
+        elements.jobLangSelect.addEventListener('change', handleJobLangChange);
+        
+        // When location changes
+        elements.locationSelect.addEventListener('change', handleLocationChange);
+        
+        // [Rest of the event listeners remain the same...]
+        // (nextBtn, backBtn, copyBtn, shareWhatsapp, shareLine, shareFacebook, shareWechat)
+    }
     // Initialize the app
     init();
 });

@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentLocation = '';
     let lastJobLangSelection = '';
     let lastLocationSelection = '';
+    let currentReferralLink = '';
 
     // Complete Translations for all languages
     const translations = {
@@ -409,11 +410,81 @@ document.addEventListener('DOMContentLoaded', function() {
         return false;
     }
 
-    // Generate QR code
+   // Generate QR code with error handling
     function generateQrCode(url) {
-        elements.qrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&format=png&color=000&bgcolor=FFF&data=${encodeURIComponent(url)}`;
+        currentReferralLink = url;
+        const qrSize = 200;
+        const qrColor = '000000'; // Black
+        const bgColor = 'FFFFFF'; // White
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&color=${qrColor}&bgcolor=${bgColor}&data=${encodeURIComponent(url)}`;
+        
+        // Create new image to handle loading/errors
+        const img = new Image();
+        img.onload = function() {
+            elements.qrCode.src = qrUrl;
+            // Make QR code clickable for sharing
+            elements.qrCode.style.cursor = 'pointer';
+            elements.qrCode.title = translations[elements.pageLangSelect.value]?.clickToShare || 'Click to share';
+        };
+        img.onerror = function() {
+            console.error('Failed to load QR code');
+            elements.qrCode.src = '';
+            elements.qrCode.alt = 'QR Code Generation Failed';
+        };
+        img.src = qrUrl;
     }
 
+    // Make QR code clickable to share
+    function setupQrCodeSharing() {
+        elements.qrCode.addEventListener('click', function() {
+            if (currentReferralLink) {
+                const shareOptions = [
+                    { name: 'WhatsApp', action: shareWhatsApp },
+                    { name: 'Line', action: shareLine },
+                    { name: 'Facebook', action: shareFacebook },
+                    { name: 'WeChat', action: shareWechat },
+                    { name: 'Copy Link', action: copyToClipboard }
+                ];
+                
+                const lang = elements.pageLangSelect.value;
+                const shareText = translations[lang]?.sharePrompt || 'Share via:';
+                
+                // Create simple share menu
+                const shareMenu = shareOptions.map(option => 
+                    `<button class="share-option-btn" onclick="(${option.action.toString()})()">
+                        ${option.name}
+                    </button>`
+                ).join('');
+                
+                const modal = document.createElement('div');
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100%';
+                modal.style.height = '100%';
+                modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                modal.style.display = 'flex';
+                modal.style.flexDirection = 'column';
+                modal.style.justifyContent = 'center';
+                modal.style.alignItems = 'center';
+                modal.style.zIndex = '1000';
+                
+                modal.innerHTML = `
+                    <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
+                        <h3>${shareText}</h3>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            ${shareMenu}
+                        </div>
+                        <button style="margin-top: 20px; padding: 8px 16px;" onclick="this.parentElement.parentElement.remove()">
+                            ${translations[lang]?.backText || 'Cancel'}
+                        </button>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+            }
+        });
+    }
     // Copy link to clipboard
     function copyToClipboard() {
         elements.referralLink.select();

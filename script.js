@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', function() {
         copyBtn: document.getElementById('copy-btn'),
         qrCode: document.getElementById('qr-code'),
         qrCodeCanvas: document.getElementById('qr-code-canvas'),
+ const qrImg = document.getElementById('qrImg');
+
         shareWhatsapp: document.getElementById('share-whatsapp'),
         shareLine: document.getElementById('share-line'),
         shareFacebook: document.getElementById('share-facebook'),
@@ -550,7 +552,10 @@ document.addEventListener('DOMContentLoaded', function() {
              // Initialize QR code sharing after DOM is ready
         setTimeout(setupQrCodeSharing, 500);
         });
-        
+ // Function to generate QR code
+function generateQrCode(url) {
+const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}`;
+ qrImg.src = qrCodeUrl; }
         // Job language change
         elements.jobLangSelect.addEventListener('change', handleJobLangChange);
         

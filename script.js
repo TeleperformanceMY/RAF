@@ -12,13 +12,9 @@ document.addEventListener('DOMContentLoaded', function() {
         backBtn: document.getElementById('back-btn'),
         referralLink: document.getElementById('referral-link'),
         copyBtn: document.getElementById('copy-btn'),
-        qrCode: document.getElementById('qr-code'),
         qrCodeCanvas: document.getElementById('qr-code-canvas'),
- const qrImg = document.getElementById('qrImg');
-
         shareWhatsapp: document.getElementById('share-whatsapp'),
         shareLine: document.getElementById('share-line'),
-        shareFacebook: document.getElementById('share-facebook'),
         shareWechat: document.getElementById('share-wechat'),
         socialLinks: {
             linkedin: document.querySelector('.social-icon.linkedin'),
@@ -405,14 +401,23 @@ document.addEventListener('DOMContentLoaded', function() {
         if (jobData) {
             const referralLink = `${jobData['Evergreen link']}${bmsId}`;
             elements.referralLink.value = referralLink;
-            generateQrCode(referralLink);
+            generateQRCode(referralLink);
             return true;
         }
         
         showAlert(translations[elements.pageLangSelect.value]?.jobDataError || 'Error generating referral link');
         return false;
     }
+
+    // Generate QR code using canvas
     function generateQRCode(url) {
+        currentReferralLink = url;
+        
+        // Clear any existing QR code
+        const ctx = elements.qrCodeCanvas.getContext('2d');
+        ctx.clearRect(0, 0, elements.qrCodeCanvas.width, elements.qrCodeCanvas.height);
+        
+        // Generate new QR code
         QRCode.toCanvas(elements.qrCodeCanvas, url, {
             width: 200,
             margin: 2,
@@ -421,84 +426,67 @@ document.addEventListener('DOMContentLoaded', function() {
                 light: '#ffffff'
             }
         }, function(error) {
-            if (error) console.error('QR Code generation error:', error);
-        });
-    }
-   // Generate QR code with error handling
-    function generateQrCode(url) {
-        currentReferralLink = url;
-        const qrSize = 200;
-        const qrColor = '000000'; // Black
-        const bgColor = 'FFFFFF'; // White
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&color=${qrColor}&bgcolor=${bgColor}&data=${encodeURIComponent(url)}`;
-        
-        // Create new image to handle loading/errors
-        const img = new Image();
-        img.onload = function() {
-            elements.qrCode.src = qrUrl;
-            // Make QR code clickable for sharing
-            elements.qrCode.style.cursor = 'pointer';
-            elements.qrCode.title = translations[elements.pageLangSelect.value]?.clickToShare || 'Click to share';
-        };
-        img.onerror = function() {
-            console.error('Failed to load QR code');
-            elements.qrCode.src = '';
-            elements.qrCode.alt = 'QR Code Generation Failed';
-        };
-        img.src = qrUrl;
-    }
-
-    // Make QR code clickable to share
-    function setupQrCodeSharing() {
-        elements.qrCode.addEventListener('click', function() {
-            if (currentReferralLink) {
-                const shareOptions = [
-                    { name: 'WhatsApp', action: shareWhatsApp },
-                    { name: 'Line', action: shareLine },
-                    { name: 'Facebook', action: shareFacebook },
-                    { name: 'WeChat', action: shareWechat },
-                    { name: 'Copy Link', action: copyToClipboard }
-                ];
-                
-                const lang = elements.pageLangSelect.value;
-                const shareText = translations[lang]?.sharePrompt || 'Share via:';
-                
-                // Create simple share menu
-                const shareMenu = shareOptions.map(option => 
-                    `<button class="share-option-btn" onclick="(${option.action.toString()})()">
-                        ${option.name}
-                    </button>`
-                ).join('');
-                
-                const modal = document.createElement('div');
-                modal.style.position = 'fixed';
-                modal.style.top = '0';
-                modal.style.left = '0';
-                modal.style.width = '100%';
-                modal.style.height = '100%';
-                modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
-                modal.style.display = 'flex';
-                modal.style.flexDirection = 'column';
-                modal.style.justifyContent = 'center';
-                modal.style.alignItems = 'center';
-                modal.style.zIndex = '1000';
-                
-                modal.innerHTML = `
-                    <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
-                        <h3>${shareText}</h3>
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            ${shareMenu}
-                        </div>
-                        <button style="margin-top: 20px; padding: 8px 16px;" onclick="this.parentElement.parentElement.remove()">
-                            ${translations[lang]?.backText || 'Cancel'}
-                        </button>
-                    </div>
-                `;
-                
-                document.body.appendChild(modal);
+            if (error) {
+                console.error('QR Code generation error:', error);
+                showAlert('Failed to generate QR code. Please try again.');
+            } else {
+                // Make QR code clickable for sharing
+                elements.qrCodeCanvas.style.cursor = 'pointer';
+                elements.qrCodeCanvas.title = translations[elements.pageLangSelect.value]?.clickToShare || 'Click to share';
+                elements.qrCodeCanvas.addEventListener('click', handleQrCodeClick);
             }
         });
     }
+
+    // Handle QR code click for sharing options
+    function handleQrCodeClick() {
+        if (currentReferralLink) {
+            const shareOptions = [
+                { name: 'WhatsApp', action: shareWhatsApp },
+                { name: 'Line', action: shareLine },
+                { name: 'WeChat', action: shareWeChat },
+                { name: 'Copy Link', action: copyToClipboard }
+            ];
+            
+            const lang = elements.pageLangSelect.value;
+            const shareText = translations[lang]?.sharePrompt || 'Share via:';
+            
+            // Create simple share menu
+            const shareMenu = shareOptions.map(option => 
+                `<button class="share-option-btn" onclick="(${option.action.toString()})()">
+                    ${option.name}
+                </button>`
+            ).join('');
+            
+            const modal = document.createElement('div');
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
+            modal.style.display = 'flex';
+            modal.style.flexDirection = 'column';
+            modal.style.justifyContent = 'center';
+            modal.style.alignItems = 'center';
+            modal.style.zIndex = '1000';
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
+                    <h3>${shareText}</h3>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        ${shareMenu}
+                    </div>
+                    <button style="margin-top: 20px; padding: 8px 16px;" onclick="this.parentElement.parentElement.remove()">
+                        ${translations[lang]?.backText || 'Cancel'}
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+    }
+
     // Copy link to clipboard
     function copyToClipboard() {
         elements.referralLink.select();
@@ -513,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 2000);
     }
 
-   // Enhanced share functions that can handle QR code sharing
+    // Enhanced share functions
     function shareWhatsApp() {
         const prompt = translations[elements.pageLangSelect.value]?.sharePrompt || 'Share this opportunity with your friends:';
         const message = `${prompt}\n\n${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${currentReferralLink}`;
@@ -528,12 +516,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.open(url, '_blank');
     }
 
-    function shareFacebook() {
-        const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentReferralLink)}`;
-        window.open(url, '_blank');
-    }
-
-    function shareWechat() {
+    function shareWeChat() {
         const prompt = translations[elements.pageLangSelect.value]?.sharePrompt || 'Share this opportunity with your friends:';
         const message = `${prompt}\n\n${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${currentReferralLink}`;
         alert(`${message}\n\nScan the QR code to share via WeChat`);
@@ -549,13 +532,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Page language change
         elements.pageLangSelect.addEventListener('change', function() {
             updatePageContent(this.value);
-             // Initialize QR code sharing after DOM is ready
-        setTimeout(setupQrCodeSharing, 500);
         });
- // Function to generate QR code
-function generateQrCode(url) {
-const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}`;
- qrImg.src = qrCodeUrl; }
+        
         // Job language change
         elements.jobLangSelect.addEventListener('change', handleJobLangChange);
         
@@ -583,8 +561,7 @@ const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data
         // Share buttons
         elements.shareWhatsapp.addEventListener('click', shareWhatsApp);
         elements.shareLine.addEventListener('click', shareLine);
-        elements.shareFacebook.addEventListener('click', shareFacebook);
-        elements.shareWechat.addEventListener('click', shareWechat);
+        elements.shareWechat.addEventListener('click', shareWeChat);
     }
 
     // Initialize the app

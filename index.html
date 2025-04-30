@@ -110,13 +110,17 @@
                         <button id="copy-btn" class="btn btn-secondary" type="button" data-translate="copyText" aria-label="Copy referral link">Copy</button>
                     </div>
 
-                    <!-- QR Code -->
+                    <!-- QR Code 
                     <div class="text-center my-4">
                         <img id="qr-code" src="" alt="QR Code" class="qr-code d-none">
                         <div id="qr-loading" class="spinner-border text-primary" role="status">
                             <span class="visually-hidden">Loading QR code...</span>
                         </div>
                         <p class="mt-2" data-translate="scanText">Or scan this QR code to apply</p>
+                    </div>-->
+                    <div class="text-center my-4">
+                         <canvas id="qr-code-canvas" class="qr-code"></canvas>
+                         <p class="mt-2" data-translate="scanText">Or scan this QR code to apply</p>
                     </div>
 
                     <!-- Share Buttons -->

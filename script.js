@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
         referralLink: document.getElementById('referral-link'),
         copyBtn: document.getElementById('copy-btn'),
         qrCode: document.getElementById('qr-code'),
+        qrCodeCanvas: document.getElementById('qr-code-canvas'),
         shareWhatsapp: document.getElementById('share-whatsapp'),
         shareLine: document.getElementById('share-line'),
         shareFacebook: document.getElementById('share-facebook'),
@@ -409,7 +410,18 @@ document.addEventListener('DOMContentLoaded', function() {
         showAlert(translations[elements.pageLangSelect.value]?.jobDataError || 'Error generating referral link');
         return false;
     }
-
+    function generateQRCode(url) {
+        QRCode.toCanvas(elements.qrCodeCanvas, url, {
+            width: 200,
+            margin: 2,
+            color: {
+                dark: '#000000',
+                light: '#ffffff'
+            }
+        }, function(error) {
+            if (error) console.error('QR Code generation error:', error);
+        });
+    }
    // Generate QR code with error handling
     function generateQrCode(url) {
         currentReferralLink = url;

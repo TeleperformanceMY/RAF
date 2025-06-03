@@ -17,7 +17,21 @@ document.addEventListener('DOMContentLoaded', function() {
         shareLine: document.getElementById('share-line'),
         shareFacebook: document.getElementById('share-facebook')
     };
+// Parse URL for BMS ID
+const pathParts = window.location.pathname.split('/');
+const bmsId = pathParts[pathParts.length - 1];
 
+if (bmsId && !isNaN(bmsId)) {
+    // Hide the BMS ID input field
+    document.getElementById('bmsIdField').style.display = 'none';
+    
+    // Set the BMS ID in a hidden field
+    document.getElementById('referrerBmsId').value = bmsId;
+    
+    // Optionally display "Referred by [BMS ID]" text
+    document.getElementById('referralNote').textContent = `Referred by ${bmsId}`;
+    document.getElementById('referralNote').style.display = 'block';
+}
     // Application Data
     let jsonData = [];
     let currentLocation = '';

@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let lastLocationSelection = '';
     let currentReferralLink = '';
 
-    // Complete Translations for all languages (keep your existing translations object)
+    // Complete Translations for all languages
     const translations = {
         // ... (keep your existing translations object exactly as is)
     };
@@ -36,28 +36,38 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize the application
     function init() {
         document.getElementById('current-year').textContent = new Date().getFullYear();
-        checkUrlForBmsId();
+        handleInfluencerLink();
         loadData();
         setupEventListeners();
         updatePageContent('english');
     }
 
-    // Check URL for BMS ID and handle accordingly
-    function checkUrlForBmsId() {
-        const pathParts = window.location.pathname.split('/');
-        const bmsId = pathParts[pathParts.length - 1];
+    // Handle influencer links (URLs ending with /1234567)
+    function handleInfluencerLink() {
+        // Get the current path
+        const path = window.location.pathname;
         
-        // Check if we have a numeric BMS ID in the URL
-        if (bmsId && !isNaN(bmsId)) {
+        // Extract BMS ID from path (last segment)
+        const pathParts = path.split('/');
+        const potentialBmsId = pathParts[pathParts.length - 1];
+        
+        // Check if it's a valid BMS ID (6-7 digits)
+        if (/^\d{6,7}$/.test(potentialBmsId)) {
             // Hide the BMS ID input field and label
             elements.bmsIdContainer.style.display = 'none';
             
             // Set the BMS ID in the hidden field
-            elements.referrerBmsId.value = bmsId;
+            elements.referrerBmsId.value = potentialBmsId;
             
             // Display referral note
-            elements.referralNote.textContent = `Referred by ${bmsId}`;
+            elements.referralNote.textContent = `Referred by ${potentialBmsId}`;
             elements.referralNote.style.display = 'block';
+            
+            // Clean up the URL (remove the BMS ID to prevent refresh issues)
+            if (window.history && window.history.replaceState) {
+                const cleanPath = pathParts.slice(0, -1).join('/') || '/';
+                window.history.replaceState({}, document.title, cleanPath);
+            }
         }
     }
 
@@ -217,12 +227,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function validateBMSId(bmsId) {
         return /^\d{6,7}$/.test(bmsId);
     }
-
-    // Validate form
+        
+    // Validate form - MODIFIED to handle influencer links
     function validateForm() {
         let isValid = true;
         
-        // BMS ID validation (only if field is visible)
+        // Only validate BMS ID if the input is visible (not an influencer link)
         if (elements.bmsIdContainer.style.display !== 'none') {
             if (!validateBMSId(elements.bmsId.value.trim())) {
                 elements.bmsId.classList.add('is-invalid');
@@ -260,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return isValid;
     }
 
-    // Generate and display referral link
+    // Generate and display referral link - MODIFIED to handle influencer links
     function generateReferralLink() {
         if (!validateForm()) return false;
         
@@ -352,14 +362,14 @@ document.addEventListener('DOMContentLoaded', function() {
         alert(message);
     }
 
-    // Setup event listeners
+    // Setup event listeners - MODIFIED to handle influencer links
     function setupEventListeners() {
         // Page language change
         elements.pageLangSelect.addEventListener('change', function() {
             updatePageContent(this.value);
         });
         
-        // BMS ID input validation (only if field is visible)
+        // Only add BMS ID validation if the field is visible
         if (elements.bmsIdContainer.style.display !== 'none') {
             elements.bmsId.addEventListener('input', function() {
                 // Only allow digits

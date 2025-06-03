@@ -36,18 +36,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize the application
     function init() {
         document.getElementById('current-year').textContent = new Date().getFullYear();
-        handleInfluencerLink();
+        handleUrlBmsId();
         loadData();
         setupEventListeners();
         updatePageContent('english');
     }
 
-    // Handle influencer links (URLs ending with /1234567)
-    function handleInfluencerLink() {
+    // Handle BMS ID from URL
+    function handleUrlBmsId() {
         // Get the current path
         const path = window.location.pathname;
-        
-        // Extract BMS ID from path (last segment)
         const pathParts = path.split('/');
         const potentialBmsId = pathParts[pathParts.length - 1];
         
@@ -62,12 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // Display referral note
             elements.referralNote.textContent = `Referred by ${potentialBmsId}`;
             elements.referralNote.style.display = 'block';
-            
-            // Clean up the URL (remove the BMS ID to prevent refresh issues)
-            if (window.history && window.history.replaceState) {
-                const cleanPath = pathParts.slice(0, -1).join('/') || '/';
-                window.history.replaceState({}, document.title, cleanPath);
-            }
         }
     }
 
@@ -227,12 +219,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function validateBMSId(bmsId) {
         return /^\d{6,7}$/.test(bmsId);
     }
-        
-    // Validate form - MODIFIED to handle influencer links
+
+    // Validate form
     function validateForm() {
         let isValid = true;
         
-        // Only validate BMS ID if the input is visible (not an influencer link)
+        // Only validate BMS ID if the input is visible (not from URL)
         if (elements.bmsIdContainer.style.display !== 'none') {
             if (!validateBMSId(elements.bmsId.value.trim())) {
                 elements.bmsId.classList.add('is-invalid');
@@ -270,11 +262,11 @@ document.addEventListener('DOMContentLoaded', function() {
         return isValid;
     }
 
-    // Generate and display referral link - MODIFIED to handle influencer links
+    // Generate and display referral link
     function generateReferralLink() {
         if (!validateForm()) return false;
         
-        // Get BMS ID - either from input or hidden field
+        // Get BMS ID - either from input or URL
         const bmsId = elements.bmsIdContainer.style.display === 'none' 
             ? elements.referrerBmsId.value 
             : elements.bmsId.value.trim();
@@ -362,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function() {
         alert(message);
     }
 
-    // Setup event listeners - MODIFIED to handle influencer links
+    // Setup event listeners
     function setupEventListeners() {
         // Page language change
         elements.pageLangSelect.addEventListener('change', function() {

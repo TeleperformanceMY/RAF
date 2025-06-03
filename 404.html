@@ -7,8 +7,8 @@
         const bmsId = path[path.length - 1];
         
         if (bmsId && !isNaN(bmsId)) {
-            // Redirect to main RAF page with BMS ID as query parameter
-            window.location.href = `https://teleperformancemy.github.io/RAF/?ref=${bmsId}`;
+            // Redirect to main RAF page with BMS ID in path
+            window.location.href = `https://teleperformancemy.github.io/RAF/#${bmsId}`;
         } else {
             // If no valid BMS ID, redirect to main page
             window.location.href = 'https://teleperformancemy.github.io/RAF/';

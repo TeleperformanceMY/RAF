@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script>
+        // Extract BMS ID from URL
+        const path = window.location.pathname.split('/');
+        const bmsId = path[path.length - 1];
+        
+        if (bmsId && !isNaN(bmsId)) {
+            // Redirect to main RAF page with BMS ID as query parameter
+            window.location.href = `https://teleperformancemy.github.io/RAF/?ref=${bmsId}`;
+        } else {
+            // If no valid BMS ID, redirect to main page
+            window.location.href = 'https://teleperformancemy.github.io/RAF/';
+        }
+    </script>
+</head>
+<body>
+    <p>Redirecting...</p>
+</body>
+</html>

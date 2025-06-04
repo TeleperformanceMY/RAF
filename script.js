@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
         shareLine: document.getElementById('share-line'),
         shareFacebook: document.getElementById('share-facebook'),
         referrerBmsId: document.getElementById('referrerBmsId'),
-        referralNote: document.getElementById('referralNote')
+        referralNote: document.getElementById('referralNote'),
+        bmsIdContainer: document.getElementById('bms-id').parentElement,
     };
 
     // Application Data
@@ -32,11 +33,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const translations = {
         // ... (keep your existing translations object exactly as is)
     };
-
+// Handle BMS ID from URL
+function handleUrlBmsId() {
+    // Get the current path
+    const path = window.location.pathname;
+    const pathParts = path.split('/');
+    const potentialBmsId = pathParts[pathParts.length - 1];
+    
+    // Check if it's a valid BMS ID (6-7 digits)
+    if (/^\d{6,7}$/.test(potentialBmsId)) {
+        // Hide the BMS ID input field and label
+        elements.bmsIdContainer.style.display = 'none';
+        
+        // Set the BMS ID in the hidden field
+        elements.referrerBmsId.value = potentialBmsId;
+        
+        // Display referral note
+        elements.referralNote.textContent = `Referred by ${potentialBmsId}`;
+        elements.referralNote.style.display = 'block';
+    }
+}
     // Initialize the application
     function init() {
         document.getElementById('current-year').textContent = new Date().getFullYear();
-        handleUrlBmsId();
+        handleUrlBmsId();  // Add this line
         loadData();
         setupEventListeners();
         updatePageContent('english');
@@ -222,18 +242,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Validate form
     function validateForm() {
-        let isValid = true;
-        
-        // Only validate BMS ID if the input is visible (not from URL)
-        if (elements.bmsIdContainer.style.display !== 'none') {
-            if (!validateBMSId(elements.bmsId.value.trim())) {
-                elements.bmsId.classList.add('is-invalid');
-                isValid = false;
-            } else {
-                elements.bmsId.classList.remove('is-invalid');
-            }
+          let isValid = true;
+    
+    // Only validate BMS ID if the input is visible (not from URL)
+    if (elements.bmsIdContainer.style.display !== 'none') {
+        if (!validateBMSId(elements.bmsId.value.trim())) {
+            elements.bmsId.classList.add('is-invalid');
+            isValid = false;
+        } else {
+            elements.bmsId.classList.remove('is-invalid');
         }
-        
+    }        
         // Job language validation
         if (!elements.jobLangSelect.value) {
             elements.jobLangSelect.classList.add('is-invalid');
@@ -264,12 +283,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Generate and display referral link
     function generateReferralLink() {
-        if (!validateForm()) return false;
-        
-        // Get BMS ID - either from input or URL
-        const bmsId = elements.bmsIdContainer.style.display === 'none' 
-            ? elements.referrerBmsId.value 
-            : elements.bmsId.value.trim();
+       if (!validateForm()) return false;
+    
+    // Get BMS ID - either from input or URL
+    const bmsId = elements.bmsIdContainer.style.display === 'none' 
+        ? elements.referrerBmsId.value 
+        : elements.bmsId.value.trim();
             
         const job = elements.jobSelect.value;
         const language = elements.jobLangSelect.value;
@@ -362,11 +381,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         // Only add BMS ID validation if the field is visible
-        if (elements.bmsIdContainer.style.display !== 'none') {
-            elements.bmsId.addEventListener('input', function() {
-                // Only allow digits
-                this.value = this.value.replace(/\D/g, '');
-                validateForm();
+    if (elements.bmsIdContainer.style.display !== 'none') {
+        elements.bmsId.addEventListener('input', function() {
+            // Only allow digits
+            this.value = this.value.replace(/\D/g, '');
+            validateForm();
             });
         }
         

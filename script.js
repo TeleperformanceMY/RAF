@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let lastJobLangSelection = '';
     let lastLocationSelection = '';
     let currentReferralLink = '';
+    let isHashBmsMode = false;
 
     // Complete Translations for all languages
     const translations = {
@@ -60,7 +61,8 @@ document.addEventListener('DOMContentLoaded', function() {
             tpMalaysia: "TP Malaysia",
             tpThailand: "TP Thailand",
             copiedText: "Copied!",
-            facebookAlert: "For Facebook, please copy the link and share it manually on your Facebook."
+            facebookAlert: "For Facebook, please copy the link and share it manually on your Facebook.",
+            referredByText: "Referred by: "
         },
         japanese: {
             welcomeMessage: "TP内部友人紹介プログラムへようこそ",
@@ -92,7 +94,8 @@ document.addEventListener('DOMContentLoaded', function() {
             tpMalaysia: "TP マレーシア",
             tpThailand: "TP タイ",
             copiedText: "コピーしました!",
-            facebookAlert: "Facebookで共有するには、リンクをコピーしてFacebookで手動で共有してください。"
+            facebookAlert: "Facebookで共有するには、リンクをコピーしてFacebookで手動で共有してください。",
+            referredByText: "紹介者: "
         },
         korean: {
             welcomeMessage: "TP 내부 친구 추천 프로그램에 오신 것을 환영합니다",
@@ -124,7 +127,8 @@ document.addEventListener('DOMContentLoaded', function() {
             tpMalaysia: "TP 말레이시아",
             tpThailand: "TP 태국",
             copiedText: "복사되었습니다!",
-            facebookAlert: "Facebook에서 공유하려면 링크를 복사하여 Facebook에서 수동으로 공유하십시오."
+            facebookAlert: "Facebook에서 공유하려면 링크를 복사하여 Facebook에서 수동으로 공유하십시오.",
+            referredByText: "추천인: "
         },
         malay: {
             welcomeMessage: "Selamat datang ke Program Rujuk Rakan Dalaman TP",
@@ -156,7 +160,8 @@ document.addEventListener('DOMContentLoaded', function() {
             tpMalaysia: "TP Malaysia",
             tpThailand: "TP Thailand",
             copiedText: "Telah disalin!",
-            facebookAlert: "Untuk Facebook, sila salin pautan dan kongsi secara manual di Facebook anda."
+            facebookAlert: "Untuk Facebook, sila salin pautan dan kongsi secara manual di Facebook anda.",
+            referredByText: "Dirujuk oleh: "
         },
         mandarin: {
             welcomeMessage: "欢迎来到TP内部推荐朋友计划",
@@ -188,7 +193,8 @@ document.addEventListener('DOMContentLoaded', function() {
             tpMalaysia: "TP 马来西亚",
             tpThailand: "TP 泰国",
             copiedText: "已复制!",
-            facebookAlert: "要在Facebook上分享，请复制链接并在Facebook应用中手动分享。"
+            facebookAlert: "要在Facebook上分享，请复制链接并在Facebook应用中手动分享。",
+            referredByText: "推荐人: "
         },
         thai: {
             welcomeMessage: "ยินดีต้อนรับสู่โปรแกรมแนะนำเพื่อนภายใน TP",
@@ -220,21 +226,78 @@ document.addEventListener('DOMContentLoaded', function() {
             tpMalaysia: "TP มาเลเซีย",
             tpThailand: "TP ประเทศไทย",
             copiedText: "คัดลอกแล้ว!",
-            facebookAlert: "สำหรับ Facebook โปรดคัดลอกลิงก์และแชร์ด้วยตนเองบน Facebook ของคุณ"
+            facebookAlert: "สำหรับ Facebook โปรดคัดลอกลิงก์และแชร์ด้วยตนเองบน Facebook ของคุณ",
+            referredByText: "แนะนำโดย: "
         }
     };
 
     // Initialize the application
     function init() {
         document.getElementById('current-year').textContent = new Date().getFullYear();
-        handleUrlBmsId();
+        handleHashBmsId();
+        handleUrlBmsId(); // Keep original URL handling as fallback
         loadData();
         setupEventListeners();
         updatePageContent('english');
     }
 
-    // Handle BMS ID from URL
+    // Handle BMS ID from hash (new functionality)
+    function handleHashBmsId() {
+        const hash = window.location.hash;
+        
+        if (hash && hash.length > 1) {
+            // Remove the # symbol and get the potential BMS ID
+            const hashValue = hash.substring(1);
+            
+            // Check if it's a valid BMS ID (6 or 7 digits)
+            if (/^\d{6,7}$/.test(hashValue)) {
+                isHashBmsMode = true;
+                
+                // Hide the BMS ID container completely
+                elements.bmsIdContainer.style.display = 'none';
+                
+                // Set the BMS ID value
+                elements.referrerBmsId.value = hashValue;
+                elements.bmsId.value = hashValue;
+                
+                // Show referral note with translated text
+                updateReferralNote(hashValue);
+                elements.referralNote.style.display = 'block';
+                
+                // Add smooth fade-in animation to the referral note
+                elements.referralNote.style.opacity = '0';
+                elements.referralNote.style.transition = 'opacity 0.5s ease-in-out';
+                setTimeout(() => {
+                    elements.referralNote.style.opacity = '1';
+                }, 100);
+                
+                console.log('Hash BMS ID detected:', hashValue);
+                return true;
+            }
+        }
+        
+        // If no valid hash BMS ID, ensure normal mode
+        isHashBmsMode = false;
+        elements.bmsIdContainer.style.display = 'block';
+        elements.referralNote.style.display = 'none';
+        return false;
+    }
+
+    // Update referral note with current language
+    function updateReferralNote(bmsId) {
+        const currentLang = elements.pageLangSelect.value || 'english';
+        const translation = translations[currentLang] || translations.english;
+        elements.referralNote.innerHTML = `<div class="alert alert-info" style="margin: 0; padding: 12px; border-radius: 8px; background-color: #e3f2fd; border: 1px solid #90caf9; color: #1565c0;">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>${translation.referredByText}${bmsId}</strong>
+        </div>`;
+    }
+
+    // Handle BMS ID from URL path (original functionality - kept as fallback)
     function handleUrlBmsId() {
+        // Only run this if hash BMS ID wasn't detected
+        if (isHashBmsMode) return;
+        
         const path = window.location.pathname;
         const pathParts = path.split('/');
         const potentialBmsId = pathParts[pathParts.length - 1];
@@ -242,9 +305,37 @@ document.addEventListener('DOMContentLoaded', function() {
         if (/^\d{6,7}$/.test(potentialBmsId)) {
             elements.bmsIdContainer.style.display = 'none';
             elements.referrerBmsId.value = potentialBmsId;
-            elements.referralNote.textContent = `Referred by ${potentialBmsId}`;
+            elements.bmsId.value = potentialBmsId;
+            updateReferralNote(potentialBmsId);
             elements.referralNote.style.display = 'block';
+            
+            // Add smooth fade-in animation to the referral note
+            elements.referralNote.style.opacity = '0';
+            elements.referralNote.style.transition = 'opacity 0.5s ease-in-out';
+            setTimeout(() => {
+                elements.referralNote.style.opacity = '1';
+            }, 100);
         }
+    }
+
+    // Listen for hash changes
+    function setupHashChangeListener() {
+        window.addEventListener('hashchange', function() {
+            console.log('Hash changed, re-checking BMS ID');
+            
+            // Reset to normal state first
+            isHashBmsMode = false;
+            elements.bmsIdContainer.style.display = 'block';
+            elements.referralNote.style.display = 'none';
+            elements.referrerBmsId.value = '';
+            elements.bmsId.value = '';
+            
+            // Re-check hash
+            handleHashBmsId();
+            
+            // Re-validate form
+            validateForm();
+        });
     }
 
     // Load JSON data
@@ -344,6 +435,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const key = el.getAttribute('data-translate-placeholder');
             if (translation[key]) el.placeholder = translation[key];
         });
+        
+        // Update referral note if it's visible
+        if (elements.referralNote.style.display !== 'none' && (elements.referrerBmsId.value || elements.bmsId.value)) {
+            const bmsId = elements.referrerBmsId.value || elements.bmsId.value;
+            updateReferralNote(bmsId);
+        }
     }
 
     // Update jobs dropdown based on current selections
@@ -404,12 +501,19 @@ document.addEventListener('DOMContentLoaded', function() {
     function validateForm() {
         let isValid = true;
         
+        // Only validate BMS ID if the container is visible (not in hash mode)
         if (elements.bmsIdContainer.style.display !== 'none') {
             if (!validateBMSId(elements.bmsId.value.trim())) {
                 elements.bmsId.classList.add('is-invalid');
                 isValid = false;
             } else {
                 elements.bmsId.classList.remove('is-invalid');
+            }
+        } else {
+            // In hash mode, ensure we have a valid BMS ID in the hidden field
+            const bmsId = elements.referrerBmsId.value || elements.bmsId.value;
+            if (!validateBMSId(bmsId)) {
+                isValid = false;
             }
         }
         
@@ -435,6 +539,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         elements.nextBtn.disabled = !isValid;
+        
+        // Add visual feedback for the next button
+        if (isValid) {
+            elements.nextBtn.classList.remove('btn-secondary');
+            elements.nextBtn.classList.add('btn-primary');
+        } else {
+            elements.nextBtn.classList.remove('btn-primary');
+            elements.nextBtn.classList.add('btn-secondary');
+        }
+        
         return isValid;
     }
 
@@ -442,9 +556,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function generateReferralLink() {
         if (!validateForm()) return false;
         
-        const bmsId = elements.bmsIdContainer.style.display === 'none' 
-            ? elements.referrerBmsId.value 
-            : elements.bmsId.value.trim();
+        // Get BMS ID from appropriate source
+        let bmsId;
+        if (isHashBmsMode || elements.bmsIdContainer.style.display === 'none') {
+            bmsId = elements.referrerBmsId.value || elements.bmsId.value;
+        } else {
+            bmsId = elements.bmsId.value.trim();
+        }
             
         const job = elements.jobSelect.value;
         const language = elements.jobLangSelect.value;
@@ -486,6 +604,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (error) {
                 console.error('QR Code generation error:', error);
                 showAlert('Failed to generate QR code. Please try again.');
+            } else {
+                console.log('QR code generated successfully');
             }
         });
     }
@@ -493,75 +613,179 @@ document.addEventListener('DOMContentLoaded', function() {
     // Copy link to clipboard
     function copyToClipboard() {
         elements.referralLink.select();
-        document.execCommand('copy');
+        elements.referralLink.setSelectionRange(0, 99999); // For mobile devices
         
-        const originalText = elements.copyBtn.innerHTML;
-        elements.copyBtn.innerHTML = `<i class="fas fa-check"></i> ${translations[elements.pageLangSelect.value]?.copiedText || 'Copied!'}`;
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                const originalText = elements.copyBtn.innerHTML;
+                const currentLang = elements.pageLangSelect.value || 'english';
+                const translation = translations[currentLang] || translations.english;
+                
+                elements.copyBtn.innerHTML = `<i class="fas fa-check"></i> ${translation.copiedText}`;
+                elements.copyBtn.classList.add('btn-success');
+                elements.copyBtn.classList.remove('btn-secondary');
+                
+                setTimeout(() => {
+                    elements.copyBtn.innerHTML = originalText;
+                    elements.copyBtn.classList.remove('btn-success');
+                    elements.copyBtn.classList.add('btn-secondary');
+                }, 2000);
+            }
+        } catch (err) {
+            console.error('Copy failed:', err);
+            showAlert('Failed to copy link. Please select and copy manually.');
+        }
         
-        setTimeout(() => {
-            elements.copyBtn.innerHTML = originalText;
-        }, 2000);
+        // Deselect the text
+        window.getSelection().removeAllRanges();
     }
 
     // Share functions
     function shareWhatsApp() {
-        const message = `${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${currentReferralLink}`;
+        const currentLang = elements.pageLangSelect.value || 'english';
+        const translation = translations[currentLang] || translations.english;
+        const message = `${translation.shareMessage}${currentReferralLink}`;
         const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
-        window.open(url, '_blank');
+        window.open(url, '_blank', 'noopener,noreferrer');
     }
 
     function shareLine() {
-        const message = `${translations[elements.pageLangSelect.value]?.shareMessage || 'Check out this job opportunity at Teleperformance:'} ${currentReferralLink}`;
+        const currentLang = elements.pageLangSelect.value || 'english';
+        const translation = translations[currentLang] || translations.english;
+        const message = `${translation.shareMessage}${currentReferralLink}`;
         const url = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(message)}`;
-        window.open(url, '_blank');
+        window.open(url, '_blank', 'noopener,noreferrer');
     }
 
     function shareFacebook() {
-        alert(translations[elements.pageLangSelect.value]?.facebookAlert || 'For Facebook, please copy the link and share it manually on your Facebook.');
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentReferralLink)}`, '_blank');
+        const currentLang = elements.pageLangSelect.value || 'english';
+        const translation = translations[currentLang] || translations.english;
+        
+        // Show alert with current language
+        showAlert(translation.facebookAlert);
+        
+        // Open Facebook sharer
+        const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentReferralLink)}`;
+        window.open(url, '_blank', 'noopener,noreferrer');
     }
 
-    // Show alert message
+// Show alert message
     function showAlert(message) {
         alert(message);
     }
 
+    // Add smooth transitions to form steps
+    function showStep(stepElement) {
+        stepElement.style.opacity = '0';
+        stepElement.style.display = 'block';
+        stepElement.style.transition = 'opacity 0.3s ease-in-out';
+        
+        setTimeout(() => {
+            stepElement.style.opacity = '1';
+        }, 10);
+    }
+
+    function hideStep(stepElement) {
+        stepElement.style.opacity = '0';
+        stepElement.style.transition = 'opacity 0.3s ease-in-out';
+        
+        setTimeout(() => {
+            stepElement.style.display = 'none';
+        }, 300);
+    }
+
     // Setup event listeners
     function setupEventListeners() {
+        // Page language change
         elements.pageLangSelect.addEventListener('change', function() {
             updatePageContent(this.value);
         });
-        
-        if (elements.bmsIdContainer.style.display !== 'none') {
-            elements.bmsId.addEventListener('input', function() {
-                this.value = this.value.replace(/\D/g, '');
-                validateForm();
-            });
-        }
-        
+
+        // Form validation listeners
+        elements.bmsId.addEventListener('input', validateForm);
         elements.jobLangSelect.addEventListener('change', handleJobLangChange);
         elements.locationSelect.addEventListener('change', handleLocationChange);
         elements.jobSelect.addEventListener('change', validateForm);
-        
-        elements.nextBtn.addEventListener('click', function() {
+
+        // Navigation buttons
+        elements.nextBtn.addEventListener('click', function(e) {
+            e.preventDefault();
             if (generateReferralLink()) {
-                elements.step1.style.display = 'none';
-                elements.step2.style.display = 'block';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                hideStep(elements.step1);
+                setTimeout(() => {
+                    showStep(elements.step2);
+                }, 300);
             }
         });
-        
-        elements.backBtn.addEventListener('click', function() {
-            elements.step2.style.display = 'none';
-            elements.step1.style.display = 'block';
+
+        elements.backBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            hideStep(elements.step2);
+            setTimeout(() => {
+                showStep(elements.step1);
+            }, 300);
         });
-        
+
+        // Copy and share buttons
         elements.copyBtn.addEventListener('click', copyToClipboard);
         elements.shareWhatsapp.addEventListener('click', shareWhatsApp);
         elements.shareLine.addEventListener('click', shareLine);
         elements.shareFacebook.addEventListener('click', shareFacebook);
+
+        // Set up hash change listener
+        setupHashChangeListener();
+
+        // Form submission prevention
+        document.querySelector('form')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+        });
     }
 
-    // Initialize the app
+    // Update social media links based on current location
+    function updateSocialMediaLinks() {
+        const socialLinks = {
+            'kuala lumpur': {
+                facebook: 'https://www.facebook.com/TeleperformanceMalaysia',
+                instagram: 'https://www.instagram.com/teleperformance_malaysia'
+            },
+            'penang': {
+                facebook: 'https://www.facebook.com/TeleperformanceMalaysia', 
+                instagram: 'https://www.instagram.com/teleperformance_malaysia'
+            },
+            'bangkok': {
+                facebook: 'https://www.facebook.com/TeleperformanceThailand',
+                instagram: 'https://www.instagram.com/teleperformance_thailand'
+            },
+            'default': {
+                facebook: 'https://www.facebook.com/Teleperformance',
+                instagram: 'https://www.instagram.com/teleperformance_global'
+            }
+        };
+
+        const links = socialLinks[currentLocation] || socialLinks.default;
+        
+        // Update social media links if they exist
+        const facebookLink = document.querySelector('.social-facebook');
+        const instagramLink = document.querySelector('.social-instagram');
+        
+        if (facebookLink) facebookLink.href = links.facebook;
+        if (instagramLink) instagramLink.href = links.instagram;
+    }
+
+    // Utility function to get current translations
+    function getCurrentTranslations() {
+        const currentLang = elements.pageLangSelect.value || 'english';
+        return translations[currentLang] || translations.english;
+    }
+
+    // Enhanced error handling
+    function handleError(error, context = '') {
+        console.error(`Error in ${context}:`, error);
+        const translation = getCurrentTranslations();
+        showAlert(translation.genericError || 'An error occurred. Please try again.');
+    }
+
+    // Initialize application when DOM is loaded
     init();
 });
